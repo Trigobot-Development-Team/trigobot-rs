@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package urb;
+
+service Broadcast {
+  rpc broadcast(BroadcastRequest) returns (BroadcastResponse);
+}
+
+message BroadcastRequest {
+  bytes content = 1;
+}
+
+message BroadcastResponse {}
