@@ -5,7 +5,7 @@ use dotenv::dotenv;
 use serenity::framework::StandardFramework;
 use serenity::prelude::*;
 
-use trigobot::commands::COMMANDS_GROUP;
+use trigobot::commands::{after_hook, before_hook, COMMANDS_GROUP};
 
 const VAR_DISCORD_TOKEN: &str = "DISCORD_TOKEN";
 const VAR_COMMAND_PREFIX: &str = "COMMAND_PREFIX";
@@ -29,6 +29,8 @@ async fn main() {
                         VAR_COMMAND_PREFIX
                     )))
                 })
+                .before(before_hook)
+                .after(after_hook)
                 .group(&COMMANDS_GROUP),
         )
         .await

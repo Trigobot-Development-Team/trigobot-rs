@@ -8,17 +8,6 @@ use serenity::utils::MessageBuilder;
 async fn say(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let channel = msg.channel_id;
 
-    println!(
-        "[{}] on <#{}>: {}",
-        msg.author.name,
-        if msg.is_private() {
-            "DM".to_string()
-        } else {
-            msg.channel_id.to_string()
-        },
-        msg.content
-    );
-
     // Can't delete messages in DMs
     if !msg.is_private() {
         match msg.delete(&ctx).await {

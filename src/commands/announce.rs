@@ -9,17 +9,6 @@ async fn announce(ctx: &Context, msg: &Message) -> CommandResult {
     let user = msg.author.clone();
     let channel = msg.channel_id;
 
-    println!(
-        "[{}] on <#{}>: {}",
-        msg.author.name,
-        if msg.is_private() {
-            "DM".to_string()
-        } else {
-            msg.channel_id.to_string()
-        },
-        msg.content
-    );
-
     // Can't delete messages in DMs
     if !msg.is_private() {
         match msg.delete(&ctx).await {
