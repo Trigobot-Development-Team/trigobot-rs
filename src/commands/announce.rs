@@ -5,12 +5,12 @@ use serenity::model::channel::Message;
 use serenity::utils::MessageBuilder;
 
 #[command]
-async fn anunciar(ctx: &Context, msg: &Message) -> CommandResult {
+async fn announce(ctx: &Context, msg: &Message) -> CommandResult {
     let user = msg.author.clone();
     let channel = msg.channel_id;
 
     println!(
-        "[{}] on {}: {}",
+        "[{}] on <#{}>: {}",
         msg.author.name,
         if msg.is_private() {
             "DM".to_string()
@@ -25,7 +25,7 @@ async fn anunciar(ctx: &Context, msg: &Message) -> CommandResult {
         match msg.delete(&ctx).await {
             Ok(_) => (),
             Err(_) => eprintln!(
-                "[ANUNCIAR] Couldn't delete message from {} on channel {}",
+                "[ANNOUNCE] Couldn't delete message from {} on channel {}",
                 msg.author.name, msg.channel_id
             ),
         };
@@ -35,7 +35,7 @@ async fn anunciar(ctx: &Context, msg: &Message) -> CommandResult {
         .say(
             ctx,
             MessageBuilder::new()
-                .push("Vai pó caralho")
+                .push("Vai pó caralho ")
                 .mention(&user)
                 .build(),
         )

@@ -1,9 +1,11 @@
 use serenity::framework::standard::macros::group;
 
-mod anunciar;
+mod announce;
+mod say;
 
-use anunciar::ANUNCIAR_COMMAND;
+use announce::ANNOUNCE_COMMAND;
+use say::SAY_COMMAND;
 
 #[group]
-#[commands(anunciar)]
+#[commands(announce, say)]
 pub struct Commands;
