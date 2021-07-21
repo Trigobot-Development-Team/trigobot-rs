@@ -1,34 +1,20 @@
-use std::env::var as ENV;
-
-use dotenv::dotenv;
-
 use serenity::framework::StandardFramework;
 use serenity::prelude::*;
 
 use trigobot::commands::{after_hook, before_hook, COMMANDS_GROUP};
-
-const VAR_DISCORD_TOKEN: &str = "DISCORD_TOKEN";
-const VAR_COMMAND_PREFIX: &str = "COMMAND_PREFIX";
+use trigobot::env::*;
 
 #[tokio::main]
 async fn main() {
-    // Load .env file vars
-    dotenv().ok();
+    // Check if all variables are correctly defined
+    test_env();
 
-    let token = ENV(VAR_DISCORD_TOKEN).expect(&format!(
-        "No Discord token found!\nSet env var {} with the token",
-        VAR_DISCORD_TOKEN
-    ));
+    let token = get_var(Variables::DiscordToken);
 
     let mut client = Client::builder(&token)
         .framework(
             StandardFramework::new()
-                .configure(|c| {
-                    c.prefix(&ENV(VAR_COMMAND_PREFIX).expect(&format!(
-                        "No command prefix defined!\nSet env var {} with the token",
-                        VAR_COMMAND_PREFIX
-                    )))
-                })
+                .configure(|c| c.prefix(&get_var(Variables::CommandPrefix)))
                 .before(before_hook)
                 .after(after_hook)
                 .group(&COMMANDS_GROUP),

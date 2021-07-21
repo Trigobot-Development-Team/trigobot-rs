@@ -1,8 +1,9 @@
 mod grpc;
 
+use crate::env::*;
+
 use std::cmp::Eq;
 use std::collections::{HashMap, HashSet};
-use std::env::var as ENV;
 use std::fs;
 use std::net::{SocketAddr, ToSocketAddrs};
 use std::sync::{Mutex, RwLock};
@@ -13,8 +14,6 @@ use grpc::{BroadcastRequest, BroadcastResponse};
 use tonic::{Code, Request, Response, Status};
 
 use tokio::task;
-
-const VAR_DOMAINS_FILE: &str = "PEERS_FILE";
 
 /// Uniform Reliable Broadcast implementation
 
@@ -58,10 +57,7 @@ impl Network {
     pub fn new() -> Self {
         let mut peers = HashMap::new();
 
-        let filename = ENV(VAR_DOMAINS_FILE).expect(&format!(
-            "Unknown domains file!\nSet env var {} with the path to the appropriate file",
-            VAR_DOMAINS_FILE
-        ));
+        let filename = get_var(Variables::DomainsFile);
 
         // Create sockets from domains
         fs::read_to_string(&filename)
