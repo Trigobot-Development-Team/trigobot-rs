@@ -1,12 +1,9 @@
-use std::collections::HashMap;
-use std::sync::Arc;
-
 use serenity::framework::StandardFramework;
 use serenity::prelude::*;
 
-use trigobot::commands::{after_hook, before_hook, COMMANDS_GROUP};
+use trigobot::commands::{after_hook, before_hook, COMMANDS_GROUP, HELP};
 use trigobot::env::*;
-use trigobot::Feed;
+use trigobot::State;
 
 #[tokio::main]
 async fn main() {
@@ -21,7 +18,8 @@ async fn main() {
                 .configure(|c| c.prefix(&get_var(Variables::CommandPrefix)))
                 .before(before_hook)
                 .after(after_hook)
-                .group(&COMMANDS_GROUP),
+                .group(&COMMANDS_GROUP)
+                .help(&HELP),
         )
         .await
         .expect("Couldn't create client");
@@ -29,16 +27,16 @@ async fn main() {
     {
         let mut data = client.data.write().await;
 
-        data.insert::<Feed>(Arc::new(
-            match Feed::load_from_file(&get_var(Variables::FeedsFile)) {
+        data.insert::<State>(
+            match State::load_from_file(&get_var(Variables::FeedsFile)) {
                 Ok(val) => val,
                 Err(e) => {
                     eprintln!("Couldn't load feeds from file: {}\n", e);
 
-                    HashMap::new()
+                    State::new()
                 }
             },
-        ))
+        )
     }
 
     if let Err(e) = client.start().await {

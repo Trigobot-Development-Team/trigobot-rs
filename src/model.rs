@@ -1,10 +1,4 @@
-use std::collections::HashMap;
-use std::fs;
-use std::io::Result;
-use std::sync::Arc;
 use std::time::{SystemTime, UNIX_EPOCH};
-
-use bincode;
 
 use chrono::DateTime;
 
@@ -16,7 +10,6 @@ use serde::{Deserialize, Serialize};
 
 use serenity::model::channel::GuildChannel;
 use serenity::model::guild::Role;
-use serenity::prelude::TypeMapKey;
 
 /// Stores all information regarding a feed
 ///
@@ -172,26 +165,6 @@ impl Feed {
 
         result
     }
-
-    /// Save a list of feeds to a file
-    pub fn save_to_file(file: &str, value: &HashMap<String, Feed>) -> Result<()> {
-        fs::write(file, bincode::serialize(&value).unwrap())?;
-
-        Ok(())
-    }
-
-    /// Load a list of feeds from a file
-    pub fn load_from_file(file: &str) -> Result<HashMap<String, Feed>> {
-        match bincode::deserialize(&fs::read(file)?) {
-            Ok(val) => Ok(val),
-            Err(e) => panic!("Invalid data!\nFeeds couldn't be loaded: {}", e),
-        }
-    }
-}
-
-// For Serenity
-impl TypeMapKey for Feed {
-    type Value = Arc<HashMap<String, Feed>>;
 }
 
 /// Stores all relevant information to create a Discord message

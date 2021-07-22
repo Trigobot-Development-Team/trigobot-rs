@@ -1,19 +1,40 @@
+use std::collections::HashSet;
+
 use serenity::client::Context;
-use serenity::framework::standard::macros::{group, hook};
-use serenity::framework::standard::CommandResult;
+use serenity::framework::standard::macros::{group, help, hook};
+use serenity::framework::standard::{
+    help_commands, Args, CommandGroup, CommandResult, HelpOptions,
+};
 use serenity::model::channel::Message;
+use serenity::model::id::UserId;
 
 mod announce;
 mod email;
+mod management;
 mod say;
 
 use announce::ANNOUNCE_COMMAND;
 use email::EMAIL_COMMAND;
+use management::MANAGEMENT_GROUP;
 use say::SAY_COMMAND;
 
 #[group]
 #[commands(announce, email, say)]
+#[sub_groups(Management)]
 struct Commands;
+
+#[help]
+async fn help(
+    context: &Context,
+    msg: &Message,
+    args: Args,
+    help_options: &'static HelpOptions,
+    groups: &[&'static CommandGroup],
+    owners: HashSet<UserId>,
+) -> CommandResult {
+    let _ = help_commands::with_embeds(context, msg, args, help_options, groups, owners).await;
+    Ok(())
+}
 
 #[hook]
 pub async fn before_hook(_ctx: &Context, msg: &Message, _command: &str) -> bool {
