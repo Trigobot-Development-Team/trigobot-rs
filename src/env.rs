@@ -6,11 +6,12 @@ use dotenv::dotenv;
 
 /// Variables that can be used
 pub enum Variables {
-    AnnouncementsChannel,
     AnnouncementIcon,
+    AnnouncementsChannel,
     CommandPrefix,
     DiscordToken,
     DomainsFile,
+    FeedsFile,
 }
 
 const VAR_DISCORD_TOKEN: &str = "DISCORD_TOKEN";
@@ -18,6 +19,7 @@ const VAR_COMMAND_PREFIX: &str = "COMMAND_PREFIX";
 const VAR_DOMAINS_FILE: &str = "PEERS_FILE";
 const VAR_ANNOUNCE_CHANNEL: &str = "ANNOUNCEMENTS";
 const VAR_ANNOUNCE_ICON: &str = "ANNOUNCEMENT_ICON";
+const VAR_FEEDS_FILE: &str = "FEEDS_FILE";
 
 pub fn test_env() {
     // Load .env file vars
@@ -29,6 +31,7 @@ pub fn test_env() {
     get_var(Variables::CommandPrefix);
     get_var(Variables::DiscordToken);
     get_var(Variables::DomainsFile);
+    get_var(Variables::FeedsFile);
 }
 
 pub fn get_var(var: Variables) -> String {
@@ -38,6 +41,7 @@ pub fn get_var(var: Variables) -> String {
         Variables::CommandPrefix => VAR_COMMAND_PREFIX,
         Variables::DiscordToken => VAR_DISCORD_TOKEN,
         Variables::DomainsFile => VAR_DOMAINS_FILE,
+        Variables::FeedsFile => VAR_FEEDS_FILE,
         _ => panic!("Unknown variable"),
     }) {
         Ok(val) => val,
@@ -66,6 +70,10 @@ fn get_error(var: Variables) -> String {
         Variables::DomainsFile => format!(
             "Unknown domains file!\nSet env var {} with the path to the appropriate file",
             VAR_DOMAINS_FILE
+        ),
+        Variables::FeedsFile => format!(
+            "Unknown feeds file!\nSet env var {} with the path to the appropriate file",
+            VAR_FEEDS_FILE
         ),
         _ => panic!("Unknown variable"),
     }
