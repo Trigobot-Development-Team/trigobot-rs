@@ -13,15 +13,17 @@ mod email;
 mod management;
 mod rss;
 mod say;
+mod traps;
 
 use self::rss::RSS_COMMAND;
 use announce::ANNOUNCE_COMMAND;
 use email::EMAIL_COMMAND;
 use management::MANAGEMENT_GROUP;
 use say::SAY_COMMAND;
+use traps::TRAPS_COMMAND;
 
 #[group]
-#[commands(announce, email, rss, say)]
+#[commands(announce, email, rss, say, traps)]
 #[sub_groups(Management)]
 struct Commands;
 
