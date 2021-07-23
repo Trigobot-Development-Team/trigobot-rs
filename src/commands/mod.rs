@@ -11,15 +11,17 @@ use serenity::model::id::UserId;
 mod announce;
 mod email;
 mod management;
+mod rss;
 mod say;
 
+use self::rss::RSS_COMMAND;
 use announce::ANNOUNCE_COMMAND;
 use email::EMAIL_COMMAND;
 use management::MANAGEMENT_GROUP;
 use say::SAY_COMMAND;
 
 #[group]
-#[commands(announce, email, say)]
+#[commands(announce, email, rss, say)]
 #[sub_groups(Management)]
 struct Commands;
 

@@ -31,6 +31,10 @@ impl State {
         }
     }
 
+    pub(crate) fn get_feeds(&mut self) -> &mut HashMap<String, Feed> {
+        &mut self.feeds
+    }
+
     pub(crate) fn set_category(&mut self, category: ChannelId) {
         self.category = Some(category);
     }
