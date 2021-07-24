@@ -23,8 +23,8 @@ use serenity::model::guild::Role;
 pub struct Feed {
     name: String,
     link: String,
-    role: Option<Role>,            // TODO: CHANGE
-    channel: Option<GuildChannel>, // TODO: CHANGE
+    role: Role,
+    channel: GuildChannel,
     updated: u64,
 }
 
@@ -37,8 +37,8 @@ impl Feed {
     pub fn new(
         name: String,
         link: String,
-        role: Option<Role>,            // TODO: CHANGE
-        channel: Option<GuildChannel>, // TODO: CHANGE
+        role: Role,
+        channel: GuildChannel,
         updated: Option<u64>,
     ) -> Self {
         Feed {
