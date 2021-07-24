@@ -14,15 +14,6 @@ use serenity::Error;
 async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
     let channel = msg.channel_id;
 
-    let mut feed = Feed::new(
-        "CMU".to_owned(),
-        "https://fenix.tecnico.ulisboa.pt/disciplinas/CMov46/2020-2021/2-semestre/rss/announcement"
-            .to_owned(),
-        None,
-        None,
-        None,
-    );
-
     // Can't delete messages in DMs
     if !msg.is_private() {
         match msg.delete(&ctx).await {
