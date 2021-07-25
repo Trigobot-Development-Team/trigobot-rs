@@ -21,7 +21,7 @@ impl EventHandler for Handler {
                     .get::<State>()
                     .expect("No state provided")
                     .get_messages()
-                    .get(&reaction.message_id)
+                    .get(&reaction.message_id.0)
                 {
                     None => None,
                     Some(r) => Some(r.to_owned()),
@@ -76,7 +76,7 @@ impl EventHandler for Handler {
                     .get::<State>()
                     .expect("No state provided")
                     .get_messages()
-                    .get(&reaction.message_id)
+                    .get(&reaction.message_id.0)
                 {
                     None => None,
                     Some(r) => Some(r.to_owned()),

@@ -24,8 +24,8 @@ use serenity::prelude::TypeMapKey;
 #[derive(Deserialize, Serialize)]
 pub struct State {
     feeds: HashMap<String, Feed>,
-    category: Option<ChannelId>,
-    messages: HashMap<MessageId, RoleId>,
+    category: Option<u64>,
+    messages: HashMap<u64, u64>, // <MessageId, RoleId>
 }
 
 impl State {
@@ -38,11 +38,11 @@ impl State {
         }
     }
 
-    pub(crate) fn get_messages(&self) -> &HashMap<MessageId, RoleId> {
+    pub(crate) fn get_messages(&self) -> &HashMap<u64, u64> {
         &self.messages
     }
 
-    pub(crate) fn get_mut_messages(&mut self) -> &mut HashMap<MessageId, RoleId> {
+    pub(crate) fn get_mut_messages(&mut self) -> &mut HashMap<u64, u64> {
         &mut self.messages
     }
 
@@ -54,7 +54,7 @@ impl State {
         &mut self.feeds
     }
 
-    pub(crate) fn set_category(&mut self, category: ChannelId) {
+    pub(crate) fn set_category(&mut self, category: u64) {
         self.category = Some(category);
     }
 

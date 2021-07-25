@@ -1,3 +1,4 @@
+use crate::env::*;
 use crate::State;
 
 use serenity::client::Context;
@@ -26,8 +27,18 @@ async fn category(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
             let state = lock.get_mut::<State>().expect("No state provided");
 
-            // TODO: Check if valid category?
-            state.set_category(category);
+            state.set_category(category.0);
+
+            match State::save_to_file(&get_var(Variables::FeedsFile), state) {
+                Ok(_) => (),
+                Err(e) => {
+                    eprintln!("Error saving state: {}", e);
+
+                    msg.reply(ctx, "Erro ao executar comando").await?;
+
+                    return Ok(());
+                }
+            };
         }
 
         msg.reply(ctx, "Category changed successfully").await?;

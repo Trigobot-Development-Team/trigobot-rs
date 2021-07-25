@@ -23,9 +23,9 @@ use serenity::model::id::{ChannelId, MessageId, RoleId};
 pub struct Feed {
     name: String,
     link: String,
-    role: RoleId,
-    channel: ChannelId,
-    message: MessageId,
+    role: u64,
+    channel: u64,
+    message: u64,
     updated: u64,
 }
 
@@ -38,9 +38,9 @@ impl Feed {
     pub fn new(
         name: String,
         link: String,
-        role: RoleId,
-        channel: ChannelId,
-        message: MessageId,
+        role: u64,
+        channel: u64,
+        message: u64,
         updated: Option<u64>,
     ) -> Self {
         Feed {
@@ -72,6 +72,14 @@ impl Feed {
         }
 
         Channel::read_from(&response.unwrap()[..]).is_ok()
+    }
+
+    pub(crate) fn get_name(&self) -> String {
+        self.name.clone()
+    }
+
+    pub(crate) fn get_role(&self) -> RoleId {
+        RoleId(self.role)
     }
 
     /// Retrieve new messages from the feed (if available)

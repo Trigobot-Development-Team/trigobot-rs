@@ -44,12 +44,13 @@ async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
                             .send_message(ctx, |a| {
                                 a.content(
                                     MessageBuilder::new()
+                                        .mention(&f.get_role())
                                         .push_bold_line_safe(m.title.clone())
                                         .build(),
                                 );
 
                                 a.embed(|e| {
-                                    e.title(m.title.clone());
+                                    e.title(format!("[{}] {}", f.get_name(), m.title.clone()));
 
                                     e.author(|a| {
                                         a.icon_url(get_var(Variables::AnnouncementIcon));

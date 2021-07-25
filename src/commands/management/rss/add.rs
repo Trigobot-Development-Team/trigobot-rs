@@ -33,7 +33,8 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 
                 // Create channel and role (if they don't exist)
                 let role = add_feed_role(ctx, &guild, &name).await?;
-                let channel = add_feed_channel(ctx, &guild, &name, role.id, category).await?;
+                let channel =
+                    add_feed_channel(ctx, &guild, &name, role.id, ChannelId(category)).await?;
 
                 // Create reaction-role message
                 let reaction = get_var(Variables::ReactionRole);
@@ -68,14 +69,25 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                         Feed::new(
                             name.to_owned(),
                             link.to_owned(),
-                            role.id,
-                            channel.id,
-                            message.id,
+                            role.id.0,
+                            channel.id.0,
+                            message.id.0,
                             None,
                         ),
                     );
 
-                    state.get_mut_messages().insert(message.id, role.id);
+                    state.get_mut_messages().insert(message.id.0, role.id.0);
+
+                    match State::save_to_file(&get_var(Variables::FeedsFile), state) {
+                        Ok(_) => (),
+                        Err(e) => {
+                            eprintln!("Error saving state: {}", e);
+
+                            msg.reply(ctx, "Erro ao executar comando").await?;
+
+                            return Ok(());
+                        }
+                    }
                 }
 
                 msg.reply(ctx, "Feed adicionado com sucesso").await?;
