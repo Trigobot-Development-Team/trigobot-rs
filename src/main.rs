@@ -1,9 +1,8 @@
+use serenity::client::bridge::gateway::GatewayIntents;
 use serenity::framework::StandardFramework;
 use serenity::prelude::*;
 
-use trigobot::commands::{after_hook, before_hook, COMMANDS_GROUP, HELP};
-use trigobot::env::*;
-use trigobot::State;
+use trigobot::*;
 
 #[tokio::main]
 async fn main() {
@@ -13,6 +12,13 @@ async fn main() {
     let token = get_var(Variables::DiscordToken);
 
     let mut client = Client::builder(&token)
+        .intents(
+            GatewayIntents::GUILDS
+                | GatewayIntents::GUILD_MESSAGES
+                | GatewayIntents::GUILD_MESSAGE_REACTIONS
+                | GatewayIntents::DIRECT_MESSAGES,
+        )
+        .event_handler(Handler)
         .framework(
             StandardFramework::new()
                 .configure(|c| c.prefix(&get_var(Variables::CommandPrefix)))

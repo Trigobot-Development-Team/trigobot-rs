@@ -64,7 +64,7 @@ pub(crate) async fn add_feed_channel(
 ) -> Result<GuildChannel, Error> {
     let channels = guild.channels(ctx).await?;
 
-    let channel = channels.values().find(|c| c.name == name);
+    let channel = channels.values().find(|c| c.name == name.to_lowercase());
 
     if channel.is_some() {
         return Ok(channel.unwrap().to_owned());

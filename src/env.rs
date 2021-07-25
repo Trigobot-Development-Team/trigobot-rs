@@ -13,6 +13,8 @@ pub enum Variables {
     DiscordToken,
     DomainsFile,
     FeedsFile,
+    ReactionRole,
+    ReactionRolesChannel,
 }
 
 const VAR_ANNOUNCE_CHANNEL: &str = "ANNOUNCEMENTS";
@@ -22,6 +24,8 @@ const VAR_DELEGATE_ROLE: &str = "DELEGATE_ROLE";
 const VAR_DISCORD_TOKEN: &str = "DISCORD_TOKEN";
 const VAR_DOMAINS_FILE: &str = "PEERS_FILE";
 const VAR_FEEDS_FILE: &str = "FEEDS_FILE";
+const VAR_REACT_ROLE: &str = "REACT_ROLE";
+const VAR_REACT_ROLE_CHANNEL: &str = "REACT_ROLE_CHANNEL";
 
 pub fn test_env() {
     // Load .env file vars
@@ -35,6 +39,8 @@ pub fn test_env() {
     get_var(Variables::DiscordToken);
     get_var(Variables::DomainsFile);
     get_var(Variables::FeedsFile);
+    get_var(Variables::ReactionRole);
+    get_var(Variables::ReactionRolesChannel);
 }
 
 pub fn get_var(var: Variables) -> String {
@@ -46,6 +52,8 @@ pub fn get_var(var: Variables) -> String {
         Variables::DiscordToken => VAR_DISCORD_TOKEN,
         Variables::DomainsFile => VAR_DOMAINS_FILE,
         Variables::FeedsFile => VAR_FEEDS_FILE,
+        Variables::ReactionRole => VAR_REACT_ROLE,
+        Variables::ReactionRolesChannel => VAR_REACT_ROLE_CHANNEL,
     }) {
         Ok(val) => val,
         Err(_) => panic!("{}", get_error(var)),
@@ -82,6 +90,13 @@ fn get_error(var: Variables) -> String {
             "Unknown feeds file!\nSet env var {} with the path to the appropriate file",
             VAR_FEEDS_FILE
         ),
-        _ => panic!("Unknown variable"),
+        Variables::ReactionRole => format!(
+            "No reaction defined for roles!\nSet env var {} with the chosen reaction",
+            VAR_REACT_ROLE
+        ),
+        Variables::ReactionRolesChannel => format!(
+            "No reaction roles channel defined!\nSet env var {} with the id of the channel",
+            VAR_REACT_ROLE_CHANNEL
+        ),
     }
 }

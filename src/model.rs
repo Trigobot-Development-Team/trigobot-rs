@@ -8,8 +8,7 @@ use rss::Channel;
 
 use serde::{Deserialize, Serialize};
 
-use serenity::model::channel::GuildChannel;
-use serenity::model::guild::Role;
+use serenity::model::id::{ChannelId, MessageId, RoleId};
 
 /// Stores all information regarding a feed
 ///
@@ -18,13 +17,15 @@ use serenity::model::guild::Role;
 /// + its link
 /// + its role on the server
 /// + its channel on the server
+/// + the message to give the role
 /// + the last time it was updated
 #[derive(Deserialize, Serialize)]
 pub struct Feed {
     name: String,
     link: String,
-    role: Role,
-    channel: GuildChannel,
+    role: RoleId,
+    channel: ChannelId,
+    message: MessageId,
     updated: u64,
 }
 
@@ -37,8 +38,9 @@ impl Feed {
     pub fn new(
         name: String,
         link: String,
-        role: Role,
-        channel: GuildChannel,
+        role: RoleId,
+        channel: ChannelId,
+        message: MessageId,
         updated: Option<u64>,
     ) -> Self {
         Feed {
@@ -51,6 +53,7 @@ impl Feed {
             } else {
                 0
             },
+            message,
         }
     }
 

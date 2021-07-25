@@ -36,11 +36,8 @@ async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
 
         let state = lock.get_mut::<State>().expect("No state provided");
 
-        state
-            .get_feeds()
-            .values_mut()
-            .into_iter()
-            .map(|f: &mut Feed| -> Result<(), Error> {
+        let _ = state.get_mut_feeds().values_mut().into_iter().map(
+            |f: &mut Feed| -> Result<(), Error> {
                 async {
                     for m in f.update().await {
                         announcements_channel
@@ -83,7 +80,8 @@ async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
                 };
 
                 Ok(())
-            });
+            },
+        );
     }
 
     channel
