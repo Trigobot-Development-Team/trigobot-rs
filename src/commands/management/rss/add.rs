@@ -1,6 +1,6 @@
 use crate::{Feed, State};
 
-use crate::commands::management::{add_feed_channel, add_feed_role};
+use crate::commands::management::rss::{add_feed_channel, add_feed_message, add_feed_role};
 use crate::env::*;
 
 use serenity::client::Context;
@@ -36,27 +36,7 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                     add_feed_channel(ctx, &guild, &name, role.id, ChannelId(category)).await?;
 
                 // Create reaction-role message
-                let reaction = get_var(Variables::ReactionRole);
-
-                let message = ChannelId(
-                    get_var(Variables::ReactionRolesChannel)
-                        .parse::<u64>()
-                        .expect("React roles' channel id is not valid!"),
-                )
-                .send_message(ctx, |m| {
-                    m.embed(|e| {
-                        e.title(format!("[{}] Cadeira disponível / Course available", name));
-
-                        // Can't use const's as format strings
-                        e.description(format!("**[PT]**\n\nSe vai fazer a cadeira **{}** reage com {} para teres acesso ao role {}, ao canal {} e receberes notificações de anúncios\nPara remover tudo isto só precisas de remover a reação\n\n**[EN]**\n\nIf you are enrolling in **{}** react with {} to get access to the role {}, the channel {} and to receive announcements' notifications\nTo quit all of this, just remove the reaction", name, reaction, role, channel, name, reaction, role, channel));
-
-                        e
-                    });
-                    m.reactions(vec![ReactionType::Unicode(reaction)]);
-
-                    m
-                })
-                .await?;
+                let message = add_feed_message(ctx, &name, role.id, channel.id).await?;
 
                 {
                     let mut lock = ctx.data.write().await;
@@ -70,12 +50,12 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                             link.to_owned(),
                             role.id.0,
                             channel.id.0,
-                            message.id.0,
+                            message.0,
                             None,
                         ),
                     );
 
-                    state.get_mut_messages().insert(message.id.0, role.id.0);
+                    state.get_mut_messages().insert(message.0, role.id.0);
 
                     match State::save_to_file(&get_var(Variables::StateFile), state) {
                         Ok(_) => (),

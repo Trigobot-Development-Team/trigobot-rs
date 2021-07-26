@@ -1,12 +1,12 @@
 use crate::State;
 
+use crate::commands::management::rss::rm_feed_message;
 use crate::env::*;
 
 use serenity::client::Context;
 use serenity::framework::standard::macros::command;
 use serenity::framework::standard::{Args, CommandResult};
 use serenity::model::channel::Message;
-use serenity::model::id::ChannelId;
 
 #[command]
 async fn rm(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
@@ -23,13 +23,10 @@ async fn rm(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             if state.get_feeds().contains_key(&name) {
                 let feed = state.get_mut_feeds().remove(&name).unwrap();
 
-                ChannelId(
-                    get_var(Variables::ReactionRolesChannel)
-                        .parse::<u64>()
-                        .expect("React roles' channel id is not valid"),
-                )
-                .delete_message(ctx, feed.get_message())
-                .await?;
+                rm_feed_message(ctx, feed.get_message()).await?;
+
+                // Remove from reaction messages
+                state.get_mut_messages().remove(&feed.get_message().0);
 
                 match State::save_to_file(&get_var(Variables::StateFile), state) {
                     Ok(_) => (),

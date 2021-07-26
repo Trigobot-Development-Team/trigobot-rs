@@ -78,12 +78,24 @@ impl Feed {
         self.name.clone()
     }
 
+    pub(crate) fn set_name(&mut self, name: String) {
+        self.name = name;
+    }
+
     pub(crate) fn get_role(&self) -> RoleId {
         RoleId(self.role)
     }
 
+    pub(crate) fn get_channel(&self) -> ChannelId {
+        ChannelId(self.channel)
+    }
+
     pub(crate) fn get_message(&self) -> MessageId {
         MessageId(self.message)
+    }
+
+    pub(crate) fn set_message(&mut self, id: u64) {
+        self.message = id;
     }
 
     /// Retrieve new messages from the feed (if available)
