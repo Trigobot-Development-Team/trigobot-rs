@@ -34,7 +34,7 @@ async fn main() {
         let mut data = client.data.write().await;
 
         data.insert::<State>(
-            match State::load_from_file(&get_var(Variables::FeedsFile)) {
+            match State::load_from_file(&get_var(Variables::StateFile)) {
                 Ok(val) => val,
                 Err(e) => {
                     eprintln!("Couldn't load feeds from file: {}\n", e);

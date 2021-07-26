@@ -172,7 +172,7 @@ impl Feed {
             .expect("Time went backwards :O")
             .as_secs();
 
-        result.sort();
+        result.sort_by(|a, b| a.timestamp.cmp(&b.timestamp));
 
         result
     }

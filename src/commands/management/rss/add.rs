@@ -78,7 +78,7 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 
                     state.get_mut_messages().insert(message.id.0, role.id.0);
 
-                    match State::save_to_file(&get_var(Variables::FeedsFile), state) {
+                    match State::save_to_file(&get_var(Variables::StateFile), state) {
                         Ok(_) => (),
                         Err(e) => {
                             eprintln!("Error saving state: {}", e);
