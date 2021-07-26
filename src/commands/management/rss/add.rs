@@ -1,5 +1,4 @@
-use crate::Feed;
-use crate::State;
+use crate::{Feed, State};
 
 use crate::commands::management::{add_feed_channel, add_feed_role};
 use crate::env::*;

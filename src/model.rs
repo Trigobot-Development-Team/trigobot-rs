@@ -82,6 +82,10 @@ impl Feed {
         RoleId(self.role)
     }
 
+    pub(crate) fn get_message(&self) -> MessageId {
+        MessageId(self.message)
+    }
+
     /// Retrieve new messages from the feed (if available)
     pub(crate) async fn update(&mut self) -> Vec<Message> {
         // Will stop if feed cannot be reached
