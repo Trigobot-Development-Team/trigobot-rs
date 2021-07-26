@@ -2,7 +2,7 @@ use crate::env::*;
 use crate::State;
 
 use serenity::async_trait;
-use serenity::model::channel::Reaction;
+use serenity::model::channel::{Reaction, ReactionType};
 use serenity::prelude::*;
 
 pub struct Handler;
@@ -59,7 +59,35 @@ impl EventHandler for Handler {
                     }
                 }
             }
-        };
+        // Check if reaction is the one for pins
+        } else if reaction.emoji.unicode_eq(&get_var(Variables::PinReaction)) {
+            if match reaction
+                .channel_id
+                .reaction_users(&ctx, reaction.message_id, reaction.emoji, None, None)
+                .await
+            {
+                Ok(u) => u,
+                Err(e) => {
+                    eprintln!("Couldn't get number of reactions: {}", e);
+
+                    return;
+                }
+            }
+            .len()
+                >= get_var(Variables::PinMinReactions)
+                    .parse::<usize>()
+                    .expect("Minimum number of pins is not valid!")
+            {
+                match reaction.channel_id.pin(&ctx, reaction.message_id).await {
+                    Ok(_) => (),
+                    Err(e) => {
+                        eprintln!("Couldn't pin message: {}", e);
+
+                        return;
+                    }
+                }
+            }
+        }
 
         ()
     }

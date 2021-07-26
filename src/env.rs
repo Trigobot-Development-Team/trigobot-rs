@@ -13,6 +13,8 @@ pub enum Variables {
     DiscordToken,
     DomainsFile,
     FeedsFile,
+    PinMinReactions,
+    PinReaction,
     ReactionRole,
     ReactionRolesChannel,
 }
@@ -24,6 +26,8 @@ const VAR_DELEGATE_ROLE: &str = "DELEGATE_ROLE";
 const VAR_DISCORD_TOKEN: &str = "DISCORD_TOKEN";
 const VAR_DOMAINS_FILE: &str = "PEERS_FILE";
 const VAR_FEEDS_FILE: &str = "FEEDS_FILE";
+const VAR_PIN_REACTION: &str = "PIN_REACTION";
+const VAR_PIN_MIN_REACTIONS: &str = "PIN_MIN_REACTIONS";
 const VAR_REACT_ROLE: &str = "REACT_ROLE";
 const VAR_REACT_ROLE_CHANNEL: &str = "REACT_ROLE_CHANNEL";
 
@@ -39,6 +43,8 @@ pub fn test_env() {
     get_var(Variables::DiscordToken);
     get_var(Variables::DomainsFile);
     get_var(Variables::FeedsFile);
+    get_var(Variables::PinMinReactions);
+    get_var(Variables::PinReaction);
     get_var(Variables::ReactionRole);
     get_var(Variables::ReactionRolesChannel);
 }
@@ -52,6 +58,8 @@ pub fn get_var(var: Variables) -> String {
         Variables::DiscordToken => VAR_DISCORD_TOKEN,
         Variables::DomainsFile => VAR_DOMAINS_FILE,
         Variables::FeedsFile => VAR_FEEDS_FILE,
+        Variables::PinMinReactions => VAR_PIN_MIN_REACTIONS,
+        Variables::PinReaction => VAR_PIN_REACTION,
         Variables::ReactionRole => VAR_REACT_ROLE,
         Variables::ReactionRolesChannel => VAR_REACT_ROLE_CHANNEL,
     }) {
@@ -89,6 +97,14 @@ fn get_error(var: Variables) -> String {
         Variables::FeedsFile => format!(
             "Unknown feeds file!\nSet env var {} with the path to the appropriate file",
             VAR_FEEDS_FILE
+        ),
+        Variables::PinMinReactions => format!(
+            "Unknown minimum number of reactions to pin message!\nSet env var {} with the chosen value",
+            VAR_PIN_MIN_REACTIONS
+        ),
+        Variables::PinReaction => format!(
+            "No pin reaction defined!\nSet env var {} with the chosen reaction",
+            VAR_PIN_REACTION
         ),
         Variables::ReactionRole => format!(
             "No reaction defined for roles!\nSet env var {} with the chosen reaction",
