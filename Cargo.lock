@@ -1867,6 +1867,7 @@ dependencies = [
  "reqwest",
  "rss",
  "serde",
+ "serde_json",
  "serenity",
  "tokio",
  "tonic",

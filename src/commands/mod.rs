@@ -9,6 +9,7 @@ use serenity::model::channel::Message;
 use serenity::model::id::UserId;
 
 mod announce;
+mod dump;
 mod email;
 mod management;
 mod rss;
@@ -18,6 +19,7 @@ mod undo;
 
 use self::rss::RSS_COMMAND;
 use announce::ANNOUNCE_COMMAND;
+use dump::DUMP_COMMAND;
 use email::EMAIL_COMMAND;
 use management::MANAGEMENT_GROUP;
 use say::SAY_COMMAND;
@@ -25,7 +27,7 @@ use traps::TRAPS_COMMAND;
 use undo::UNDO_COMMAND;
 
 #[group]
-#[commands(announce, email, rss, say, traps, undo)]
+#[commands(announce, dump, email, rss, say, traps, undo)]
 #[sub_groups(Management)]
 struct Commands;
 
