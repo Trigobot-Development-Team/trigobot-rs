@@ -14,6 +14,7 @@ async fn main() {
     let mut client = Client::builder(&token)
         .intents(
             GatewayIntents::GUILDS
+                | GatewayIntents::GUILD_MEMBERS
                 | GatewayIntents::GUILD_MESSAGES
                 | GatewayIntents::GUILD_MESSAGE_REACTIONS
                 | GatewayIntents::DIRECT_MESSAGES,
