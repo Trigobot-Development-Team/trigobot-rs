@@ -54,11 +54,7 @@ impl Feed {
             link,
             role,
             channel,
-            updated: if updated.is_some() {
-                updated.unwrap()
-            } else {
-                0
-            },
+            updated: if let Some(val) = updated { val } else { 0 },
             message,
         }
     }
@@ -170,12 +166,12 @@ impl Feed {
                             html2md::parse_html(
                                 &m.title
                                     .clone()
-                                    .unwrap_or("Trigobot for President".to_owned()),
+                                    .unwrap_or_else(|| "Trigobot for President".to_owned()),
                             ),
                             html2md::parse_html(
                                 &m.description
                                     .clone()
-                                    .unwrap_or("I am inevitable".to_owned()),
+                                    .unwrap_or_else(|| "I am inevitable".to_owned()),
                             ),
                             m.link.clone(),
                             ts,
@@ -201,7 +197,7 @@ impl Feed {
 }
 
 /// Stores all relevant information to create a Discord message
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq)]
 pub(crate) struct Message {
     pub author: String,
     pub title: String,
@@ -229,6 +225,12 @@ impl Message {
 }
 
 impl Eq for Message {}
+
+impl PartialOrd for Message {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
+}
 
 impl Ord for Message {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -263,7 +265,7 @@ pub(crate) async fn update_all_feeds<T: CacheHttp>(ctx: T, state: &mut State) ->
                     );
 
                     a.embed(|e| {
-                        e.title(format!("[{}] {}", f.get_name(), m.title.clone()));
+                        e.title(format!("[{}] {}", f.get_name(), m.title));
 
                         e.author(|a| {
                             a.icon_url(get_var(Variables::AnnouncementIcon));

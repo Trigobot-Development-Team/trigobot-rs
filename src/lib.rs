@@ -2,6 +2,10 @@ mod commands;
 pub(crate) mod env;
 mod events;
 pub(crate) mod model;
+
+#[allow(clippy::all)]
+#[allow(dead_code)]
+#[allow(unused_variables)]
 mod network;
 
 use self::model::{update_all_feeds, Feed};
@@ -16,8 +20,6 @@ use std::io::Result;
 use std::sync::Arc;
 use std::time::Duration;
 
-use bincode;
-
 use serde::{Deserialize, Serialize};
 
 use serenity::prelude::TypeMapKey;
@@ -27,7 +29,7 @@ use serenity::Result as SResult;
 use tokio::sync::Mutex;
 use tokio::time::sleep;
 
-const TIME_BEFORE_UPDATE: u64 = 1 * 60;
+const TIME_BEFORE_UPDATE: u64 = 60; // 60 seconds
 
 #[derive(Deserialize, Serialize)]
 pub struct State {
@@ -79,6 +81,12 @@ impl State {
             Ok(val) => Ok(val),
             Err(e) => panic!("Invalid data!\nFeeds couldn't be loaded: {}", e),
         }
+    }
+}
+
+impl Default for State {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
