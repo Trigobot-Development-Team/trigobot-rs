@@ -27,6 +27,8 @@ use serenity::Result as SResult;
 use tokio::sync::Mutex;
 use tokio::time::sleep;
 
+const TIME_BEFORE_UPDATE: u64 = 1 * 60;
+
 #[derive(Deserialize, Serialize)]
 pub struct State {
     feeds: HashMap<String, Feed>,
@@ -94,6 +96,8 @@ pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<Mutex<State>>) -> SResult
             * 60,
         0,
     );
+
+    sleep(Duration::new(TIME_BEFORE_UPDATE, 0)).await;
 
     loop {
         update_all_feeds(&client, &mut *state.lock().await).await?;

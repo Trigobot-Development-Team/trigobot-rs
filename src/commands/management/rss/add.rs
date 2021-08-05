@@ -6,7 +6,7 @@ use crate::env::*;
 use serenity::client::Context;
 use serenity::framework::standard::macros::command;
 use serenity::framework::standard::{Args, CommandResult};
-use serenity::model::channel::{Message, ReactionType};
+use serenity::model::channel::Message;
 use serenity::model::id::ChannelId;
 
 #[command]
