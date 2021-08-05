@@ -22,7 +22,7 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             let category = {
                 let lock = ctx.data.read().await;
 
-                let state = lock.get::<State>().expect("No state provided");
+                let state = lock.get::<State>().expect("No state provided").lock().await;
 
                 state.category
             };
@@ -41,7 +41,11 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                 {
                     let mut lock = ctx.data.write().await;
 
-                    let state = lock.get_mut::<State>().expect("No state provided");
+                    let mut state = lock
+                        .get_mut::<State>()
+                        .expect("No state provided")
+                        .lock()
+                        .await;
 
                     state.get_mut_feeds().insert(
                         name.to_owned(),
@@ -57,7 +61,7 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
 
                     state.get_mut_messages().insert(message.0, role.id.0);
 
-                    match State::save_to_file(&get_var(Variables::StateFile), state) {
+                    match State::save_to_file(&get_var(Variables::StateFile), &state) {
                         Ok(_) => (),
                         Err(e) => {
                             eprintln!("Error saving state: {}", e);

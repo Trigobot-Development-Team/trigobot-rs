@@ -4,7 +4,7 @@ mod events;
 pub(crate) mod model;
 mod network;
 
-use self::model::Feed;
+use self::model::{update_all_feeds, Feed};
 
 pub use self::commands::{after_hook, before_hook, COMMANDS_GROUP, HELP};
 pub use self::env::*;
@@ -13,13 +13,19 @@ pub use self::events::Handler;
 use std::collections::HashMap;
 use std::fs;
 use std::io::Result;
+use std::sync::Arc;
+use std::time::Duration;
 
 use bincode;
 
 use serde::{Deserialize, Serialize};
 
-use serenity::model::id::{ChannelId, MessageId, RoleId};
 use serenity::prelude::TypeMapKey;
+use serenity::CacheAndHttp;
+use serenity::Result as SResult;
+
+use tokio::sync::Mutex;
+use tokio::time::sleep;
 
 #[derive(Deserialize, Serialize)]
 pub struct State {
@@ -76,5 +82,21 @@ impl State {
 
 // So State can be included in the global state of the bot
 impl TypeMapKey for State {
-    type Value = State;
+    type Value = Arc<Mutex<State>>;
+}
+
+/// Loop to update RSS feeds continuously
+pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<Mutex<State>>) -> SResult<()> {
+    let time = Duration::new(
+        get_var(Variables::RssSleep)
+            .parse::<u64>()
+            .expect("RSS sleep time is invalid!")
+            * 60,
+        0,
+    );
+
+    loop {
+        update_all_feeds(&client, &mut *state.lock().await).await?;
+        sleep(time).await;
+    }
 }

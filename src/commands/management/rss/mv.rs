@@ -19,7 +19,11 @@ async fn mv(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
         {
             let mut lock = ctx.data.write().await;
 
-            let state = lock.get_mut::<State>().expect("No state provided");
+            let mut state = lock
+                .get_mut::<State>()
+                .expect("No state provided")
+                .lock()
+                .await;
 
             if state.get_feeds().contains_key(&old_name) {
                 let feeds = state.get_mut_feeds();
@@ -50,7 +54,7 @@ async fn mv(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                 messages.remove(&old_msg.0);
                 messages.insert(new_msg.0, role.0);
 
-                match State::save_to_file(&get_var(Variables::StateFile), state) {
+                match State::save_to_file(&get_var(Variables::StateFile), &state) {
                     Ok(_) => (),
                     Err(e) => {
                         eprintln!("Error saving state: {}", e);

@@ -69,19 +69,20 @@ impl EventHandler for Handler {
         // Check if reaction is the one for reaction roles
         if reaction.emoji.unicode_eq(&get_var(Variables::ReactionRole)) {
             // Check if one of the special messages
-            if let Some(role) = {
-                let lock = ctx.data.read().await;
+            let lock = ctx.data.read().await;
+            let role = match lock
+                .get::<State>()
+                .expect("No state provided")
+                .lock()
+                .await
+                .get_messages()
+                .get(&reaction.message_id.0)
+            {
+                None => None,
+                Some(r) => Some(r.to_owned()),
+            };
 
-                match lock
-                    .get::<State>()
-                    .expect("No state provided")
-                    .get_messages()
-                    .get(&reaction.message_id.0)
-                {
-                    None => None,
-                    Some(r) => Some(r.to_owned()),
-                }
-            } {
+            if let Some(role) = role {
                 // Intent for DMs is not enabled
                 match match reaction
                     .guild_id
@@ -152,19 +153,20 @@ impl EventHandler for Handler {
         // Check if reaction is the one for reaction roles
         if reaction.emoji.unicode_eq(&get_var(Variables::ReactionRole)) {
             // Check if one of the special messages
-            if let Some(role) = {
-                let lock = ctx.data.read().await;
+            let lock = ctx.data.read().await;
+            let role = match lock
+                .get::<State>()
+                .expect("No state provided")
+                .lock()
+                .await
+                .get_messages()
+                .get(&reaction.message_id.0)
+            {
+                None => None,
+                Some(r) => Some(r.to_owned()),
+            };
 
-                match lock
-                    .get::<State>()
-                    .expect("No state provided")
-                    .get_messages()
-                    .get(&reaction.message_id.0)
-                {
-                    None => None,
-                    Some(r) => Some(r.to_owned()),
-                }
-            } {
+            if let Some(role) = role {
                 // Intent for DMs is not enabled
                 match match reaction
                     .guild_id

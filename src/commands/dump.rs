@@ -12,9 +12,9 @@ async fn dump(ctx: &Context, msg: &Message) -> CommandResult {
     let dump = {
         let lock = ctx.data.read().await;
 
-        let state = lock.get::<State>().expect("No state provided");
+        let state = lock.get::<State>().expect("No state provided").lock().await;
 
-        json!(state)
+        json!(*state)
     };
 
     msg.reply(&ctx, dump).await?;

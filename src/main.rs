@@ -1,6 +1,11 @@
+use std::sync::Arc;
+
 use serenity::client::bridge::gateway::GatewayIntents;
 use serenity::framework::StandardFramework;
 use serenity::prelude::*;
+
+use tokio::sync::Mutex;
+use tokio::try_join;
 
 use trigobot::*;
 
@@ -31,22 +36,27 @@ async fn main() {
         .await
         .expect("Couldn't create client");
 
+    let state = Arc::new(Mutex::new(
+        match State::load_from_file(&get_var(Variables::StateFile)) {
+            Ok(val) => val,
+            Err(e) => {
+                eprintln!("Couldn't load feeds from file: {}\n", e);
+
+                State::new()
+            }
+        },
+    ));
+
     {
         let mut data = client.data.write().await;
 
-        data.insert::<State>(
-            match State::load_from_file(&get_var(Variables::StateFile)) {
-                Ok(val) => val,
-                Err(e) => {
-                    eprintln!("Couldn't load feeds from file: {}\n", e);
-
-                    State::new()
-                }
-            },
-        )
+        data.insert::<State>(Arc::clone(&state));
     }
 
-    if let Err(e) = client.start().await {
-        println!("Client error: {:?}", e);
+    let http_client = Arc::clone(&client.cache_and_http);
+
+    match try_join!(client.start(), rss(http_client, state)) {
+        Ok(_) => (),
+        Err(e) => eprintln!("An error occurred: {}", e),
     }
 }
