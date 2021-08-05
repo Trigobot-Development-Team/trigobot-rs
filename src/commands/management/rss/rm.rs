@@ -21,7 +21,7 @@ async fn rm(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             let mut state = lock
                 .get_mut::<State>()
                 .expect("No state provided")
-                .lock()
+                .write()
                 .await;
 
             if state.get_feeds().contains_key(&name) {

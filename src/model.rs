@@ -100,6 +100,14 @@ impl Feed {
         self.message = id;
     }
 
+    pub(crate) fn get_link(&self) -> String {
+        self.link.clone()
+    }
+
+    pub(crate) fn get_update(&self) -> u64 {
+        self.updated
+    }
+
     /// Retrieve new messages from the feed (if available)
     pub(crate) async fn update(&mut self) -> Vec<Message> {
         // Will stop if feed cannot be reached
@@ -154,7 +162,7 @@ impl Feed {
                     if ts > self.updated {
                         Some(Message::new(
                             match &m.author {
-                                Some(a) => match reg_author.captures(&a) {
+                                Some(a) => match reg_author.captures(a) {
                                     Some(c) => match c.get(1) {
                                         Some(a) => a.as_str().to_owned(),
                                         None => "Teacher Trigobot".to_owned(),
@@ -295,7 +303,7 @@ pub(crate) async fn update_all_feeds<T: CacheHttp>(ctx: T, state: &mut State) ->
         }
     }
 
-    match State::save_to_file(&get_var(Variables::StateFile), &state) {
+    match State::save_to_file(&get_var(Variables::StateFile), state) {
         Ok(_) => (),
         Err(e) => eprintln!("Error saving state: {}", e),
     };

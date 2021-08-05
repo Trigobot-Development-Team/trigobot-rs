@@ -4,7 +4,7 @@ use serenity::client::bridge::gateway::GatewayIntents;
 use serenity::framework::StandardFramework;
 use serenity::prelude::*;
 
-use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 use tokio::try_join;
 
 use trigobot::*;
@@ -36,7 +36,7 @@ async fn main() {
         .await
         .expect("Couldn't create client");
 
-    let state = Arc::new(Mutex::new(
+    let state = Arc::new(RwLock::new(
         match State::load_from_file(&get_var(Variables::StateFile)) {
             Ok(val) => val,
             Err(e) => {

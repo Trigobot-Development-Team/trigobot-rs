@@ -22,7 +22,7 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             let category = {
                 let lock = ctx.data.read().await;
 
-                let state = lock.get::<State>().expect("No state provided").lock().await;
+                let state = lock.get::<State>().expect("No state provided").read().await;
 
                 state.category
             };
@@ -44,7 +44,7 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                     let mut state = lock
                         .get_mut::<State>()
                         .expect("No state provided")
-                        .lock()
+                        .write()
                         .await;
 
                     state.get_mut_feeds().insert(

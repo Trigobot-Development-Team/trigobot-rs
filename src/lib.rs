@@ -26,7 +26,7 @@ use serenity::prelude::TypeMapKey;
 use serenity::CacheAndHttp;
 use serenity::Result as SResult;
 
-use tokio::sync::Mutex;
+use tokio::sync::RwLock;
 use tokio::time::sleep;
 
 const TIME_BEFORE_UPDATE: u64 = 60; // 60 seconds
@@ -92,11 +92,11 @@ impl Default for State {
 
 // So State can be included in the global state of the bot
 impl TypeMapKey for State {
-    type Value = Arc<Mutex<State>>;
+    type Value = Arc<RwLock<State>>;
 }
 
 /// Loop to update RSS feeds continuously
-pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<Mutex<State>>) -> SResult<()> {
+pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<RwLock<State>>) -> SResult<()> {
     let time = Duration::new(
         get_var(Variables::RssSleep)
             .parse::<u64>()
@@ -108,7 +108,7 @@ pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<Mutex<State>>) -> SResult
     sleep(Duration::new(TIME_BEFORE_UPDATE, 0)).await;
 
     loop {
-        update_all_feeds(&client, &mut *state.lock().await).await?;
+        update_all_feeds(&client, &mut *state.write().await).await?;
         sleep(time).await;
     }
 }

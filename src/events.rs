@@ -75,7 +75,7 @@ impl EventHandler for Handler {
             let role = lock
                 .get::<State>()
                 .expect("No state provided")
-                .lock()
+                .read()
                 .await
                 .get_messages()
                 .get(&reaction.message_id.0)
@@ -153,7 +153,7 @@ impl EventHandler for Handler {
             let role = lock
                 .get::<State>()
                 .expect("No state provided")
-                .lock()
+                .read()
                 .await
                 .get_messages()
                 .get(&reaction.message_id.0)

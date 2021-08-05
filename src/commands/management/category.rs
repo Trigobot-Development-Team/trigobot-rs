@@ -28,7 +28,7 @@ async fn category(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
             let mut state = lock
                 .get_mut::<State>()
                 .expect("No state provided")
-                .lock()
+                .write()
                 .await;
 
             state.set_category(category.0);

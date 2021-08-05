@@ -13,10 +13,12 @@ use serenity::model::permissions::Permissions;
 use serenity::Error;
 
 mod add;
+mod list;
 mod mv;
 mod rm;
 
 use add::ADD_COMMAND;
+use list::LIST_COMMAND;
 use mv::MV_COMMAND;
 use rm::RM_COMMAND;
 
@@ -24,7 +26,7 @@ const MAX_COLOR_VALUE: u64 = 16777215;
 
 #[group]
 #[prefix = "rss"]
-#[commands(add, mv, rm)]
+#[commands(add, list, mv, rm)]
 pub(crate) struct Rss;
 
 /// Create a role if it doesn't exist and return it

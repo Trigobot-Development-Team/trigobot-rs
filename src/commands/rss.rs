@@ -30,7 +30,7 @@ async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
         let mut state = lock
             .get_mut::<State>()
             .expect("No state provided")
-            .lock()
+            .write()
             .await;
 
         update_all_feeds((&Arc::clone(&ctx.cache), &*ctx.http), &mut state).await?;
