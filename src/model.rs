@@ -104,8 +104,16 @@ impl Feed {
         self.link.clone()
     }
 
+    pub(crate) fn set_link(&mut self, link: String) {
+        self.link = link;
+    }
+
     pub(crate) fn get_update(&self) -> u64 {
         self.updated
+    }
+
+    pub(crate) fn set_update(&mut self, update: u64) {
+        self.updated = update;
     }
 
     /// Retrieve new messages from the feed (if available)
