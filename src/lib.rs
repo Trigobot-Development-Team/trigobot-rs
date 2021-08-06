@@ -31,7 +31,7 @@ use tokio::time::sleep;
 
 const TIME_BEFORE_UPDATE: u64 = 60; // 60 seconds
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Default)]
 pub struct State {
     feeds: HashMap<String, Feed>,
     category: Option<u64>,
@@ -41,11 +41,7 @@ pub struct State {
 impl State {
     /// Create an empty state
     pub fn new() -> Self {
-        State {
-            feeds: HashMap::new(),
-            category: None,
-            messages: HashMap::new(),
-        }
+        State::default()
     }
 
     pub(crate) fn get_messages(&self) -> &HashMap<u64, u64> {
@@ -81,12 +77,6 @@ impl State {
             Ok(val) => Ok(val),
             Err(e) => panic!("Invalid data!\nFeeds couldn't be loaded: {}", e),
         }
-    }
-}
-
-impl Default for State {
-    fn default() -> Self {
-        Self::new()
     }
 }
 

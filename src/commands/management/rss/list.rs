@@ -8,17 +8,22 @@ use serenity::framework::standard::CommandResult;
 use serenity::model::channel::Message;
 use serenity::utils::MessageBuilder;
 
+const MESSAGE_MAX_LENGTH: usize = 2000;
+
 #[command]
 async fn list(ctx: &Context, msg: &Message) -> CommandResult {
-    let list = {
+    let mut messages: Vec<String> = Vec::new();
+
+    {
         let lock = ctx.data.read().await;
 
         let state = lock.get::<State>().expect("No state provided").read().await;
 
-        let mut msg = MessageBuilder::new();
+        let mut cur = String::new();
 
         for f in state.get_feeds().values().into_iter() {
-            msg.push_bold(f.get_name())
+            let tmp = MessageBuilder::new()
+                .push_bold(f.get_name())
                 .push(": ")
                 .push_line(f.get_link())
                 .push("Última atualização: ")
@@ -28,13 +33,21 @@ async fn list(ctx: &Context, msg: &Message) -> CommandResult {
                         Utc,
                     )
                     .format("%Y/%m/%d %T %Z"),
-                );
-        }
+                )
+                .build();
 
-        msg.build()
+            if cur.len() + tmp.len() > MESSAGE_MAX_LENGTH {
+                messages.push(cur);
+                cur = tmp;
+            } else {
+                cur.push_str(&tmp);
+            }
+        }
     };
 
-    msg.reply(ctx, list).await?;
+    for m in messages {
+        msg.channel_id.say(ctx, m).await?;
+    }
 
     Ok(())
 }

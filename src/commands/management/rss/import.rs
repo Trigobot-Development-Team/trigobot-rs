@@ -1,6 +1,7 @@
 use crate::commands::management::rss::{
     add_feed_channel, add_feed_message, add_feed_role, rm_feed_message,
 };
+use crate::env::*;
 use crate::{Feed, State};
 
 use std::collections::{HashMap, HashSet};
@@ -114,6 +115,17 @@ async fn import(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
                 }
 
                 messages.extend(messages_to_add);
+            }
+
+            match State::save_to_file(&get_var(Variables::StateFile), &state) {
+                Ok(_) => (),
+                Err(e) => {
+                    eprintln!("Error saving state: {}", e);
+
+                    msg.reply(ctx, "Erro ao executar comando").await?;
+
+                    return Ok(());
+                }
             }
 
             msg.reply(ctx, "Feeds importados com sucesso").await?;
