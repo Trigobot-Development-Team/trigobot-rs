@@ -11,19 +11,6 @@ use serenity::utils::MessageBuilder;
 
 #[command]
 async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
-    let channel = msg.channel_id;
-
-    // Can't delete messages in DMs
-    if !msg.is_private() {
-        match msg.delete(&ctx).await {
-            Ok(_) => (),
-            Err(_) => eprintln!(
-                "[RSS] Couldn't delete message from {} on channel {}",
-                msg.author.name, msg.channel_id
-            ),
-        };
-    }
-
     {
         let mut lock = ctx.data.write().await;
 
@@ -36,14 +23,13 @@ async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
         update_all_feeds((&Arc::clone(&ctx.cache), &*ctx.http), &mut state).await?;
     }
 
-    channel
-        .say(
-            ctx,
-            MessageBuilder::new()
-                .push("Feeds atualizados com sucesso")
-                .build(),
-        )
-        .await?;
+    msg.reply(
+        ctx,
+        MessageBuilder::new()
+            .push("Feeds atualizados com sucesso")
+            .build(),
+    )
+    .await?;
 
     Ok(())
 }
