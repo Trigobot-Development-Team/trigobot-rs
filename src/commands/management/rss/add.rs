@@ -1,6 +1,8 @@
 use crate::{Feed, State};
 
-use crate::commands::management::rss::{add_feed_channel, add_feed_message, add_feed_role};
+use crate::commands::management::rss::{
+    add_feed_channel, add_feed_message, add_feed_role, rm_feed_message,
+};
 use crate::env::*;
 
 use serenity::client::Context;
@@ -47,7 +49,8 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                         .write()
                         .await;
 
-                    state.get_mut_feeds().insert(
+                    state.get_mut_messages().insert(message.0, role.id.0);
+                    if let Some(old) = state.get_mut_feeds().insert(
                         name.to_owned(),
                         Feed::new(
                             name.to_owned(),
@@ -57,9 +60,11 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                             message.0,
                             None,
                         ),
-                    );
+                    ) {
+                        rm_feed_message(ctx, old.get_message()).await?;
 
-                    state.get_mut_messages().insert(message.0, role.id.0);
+                        state.get_mut_messages().remove(&old.get_message().0);
+                    }
 
                     match State::save_to_file(&get_var(Variables::StateFile), &state) {
                         Ok(_) => (),
