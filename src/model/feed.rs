@@ -3,8 +3,6 @@ use crate::env::*;
 
 use chrono::DateTime;
 
-use md5;
-
 use regex::Regex;
 
 use rss::Channel;

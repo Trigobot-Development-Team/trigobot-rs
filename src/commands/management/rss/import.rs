@@ -63,7 +63,7 @@ async fn import(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
                         let message = old.get_message();
                         messages_to_remove.insert(message.0);
 
-                        rm_feed_message(&ctx, message).await?;
+                        rm_feed_message(ctx, message).await?;
 
                         let role = old.get_role();
 

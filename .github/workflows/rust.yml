@@ -26,8 +26,8 @@ jobs:
       - name: Build
         run: cargo build --verbose
 
-      - name: Check
-        run: cargo clippy -- --verbose
+      - name: Clippy Check
+        run: cargo clippy -- -Dclippy::all --verbose
 
-      - name: Format
+      - name: Format Check
         run: cargo fmt --all -- --check

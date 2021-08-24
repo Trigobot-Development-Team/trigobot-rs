@@ -62,7 +62,7 @@ async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> Result<(), Error
 
         // Check if announcement is too old, needs to be updated or is new
         let id = if m.timestamp <= update_ts {
-            if let Some(_) = &m.link {
+            if m.link.is_some() {
                 if let Some(old_id) = feed.check_changed(&m) {
                     edit_announcement(
                         ctx,
@@ -204,7 +204,7 @@ fn prune_msg(msg: &str, len: usize) -> String {
     msg.chars()
         .collect::<Vec<char>>()
         .chunks(len)
-        .nth(0)
+        .next()
         .unwrap()
         .iter()
         .collect()

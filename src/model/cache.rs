@@ -35,8 +35,6 @@ impl<K: Hash + Eq + Clone, V> Cache<K, V> {
     }
 
     pub fn get(&self, key: &K) -> Option<&V> {
-        let elem = self.keys.get(key);
-
-        elem
+        self.keys.get(key)
     }
 }
