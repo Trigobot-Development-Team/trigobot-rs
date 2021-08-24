@@ -10,6 +10,7 @@ use serenity::model::channel::{
 use serenity::model::guild::Role;
 use serenity::model::id::{ChannelId, GuildId, MessageId, RoleId};
 use serenity::model::permissions::Permissions;
+use serenity::utils::MessageBuilder;
 use serenity::Error;
 
 mod add;
@@ -121,24 +122,52 @@ pub(crate) async fn add_feed_message(
     let reaction = get_var(Variables::ReactionRole);
 
     Ok(ChannelId(
-                    get_var(Variables::ReactionRolesChannel)
-                        .parse::<u64>()
-                        .expect("React roles' channel id is not valid!"),
-                )
-                .send_message(ctx, |m| {
-                    m.embed(|e| {
-                        e.title(format!("[{}] Cadeira disponível / Course available", name));
+        get_var(Variables::ReactionRolesChannel)
+            .parse::<u64>()
+            .expect("React roles' channel id is not valid!"),
+    )
+    .send_message(ctx, |m| {
+        m.embed(|e| {
+            e.title(format!("[{}] Cadeira disponível / Course available", name));
 
-                        // Can't use const's as format strings
-                        e.description(format!("**[PT]**\n\nSe vai fazer a cadeira **{}** reage com {} para teres acesso ao role {}, ao canal {} e receberes notificações de anúncios\nPara remover tudo isto só precisas de remover a reação\n\n**[EN]**\n\nIf you are enrolling in **{}** react with {} to get access to the role {}, the channel {} and to receive announcements' notifications\nTo quit all of this, just remove the reaction", name, reaction, role, channel, name, reaction, role, channel));
+            // Can't use const's as format strings
+            e.description(
+                MessageBuilder::new()
+                    // Portuguese version
+                    .push_bold_line("[PT]")
+                    .push_line("")
+                    .push("Se vais fazer a cadeira ")
+                    .push_bold(name)
+                    .push(" reage com ".to_owned() + &reaction + " para teres acesso ao role ")
+                    .mention(&role)
+                    .push(", ao canal ")
+                    .mention(&channel)
+                    .push_line(" e receberes notificações de anúncios")
+                    .push_line("Para remover tudo isto só precisas de remover a reação")
+                    .push_line("")
+                    .push_line("")
+                    // English version
+                    .push_bold_line("[EN]")
+                    .push_line("")
+                    .push("If you are enrolling in ")
+                    .push_bold(name)
+                    .push(" react with ".to_owned() + &reaction + " to get access to the role ")
+                    .mention(&role)
+                    .push(", the channel ")
+                    .mention(&channel)
+                    .push_line(" and to receive announcements' notifications")
+                    .push("To quit all of this, just remove the reaction")
+                    .build(),
+            );
 
-                        e
-                    });
-                    m.reactions(vec![ReactionType::Unicode(reaction)]);
+            e
+        });
+        m.reactions(vec![ReactionType::Unicode(reaction)]);
 
-                    m
-                })
-                .await?.id)
+        m
+    })
+    .await?
+    .id)
 }
 
 /// Remove feed reaction role message
