@@ -31,7 +31,7 @@ use tokio::time::sleep;
 
 const TIME_BEFORE_UPDATE: u64 = 60; // 60 seconds
 
-#[derive(Deserialize, Serialize, Default)]
+#[derive(Default, Deserialize, Serialize)]
 pub struct State {
     feeds: HashMap<String, Feed>,
     category: Option<u64>,

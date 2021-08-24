@@ -8,6 +8,7 @@ use dotenv::dotenv;
 pub enum Variables {
     AnnouncementIcon,
     AnnouncementsChannel,
+    CacheEntries,
     CommandPrefix,
     DelegateRole,
     DiscordToken,
@@ -24,6 +25,7 @@ pub enum Variables {
 
 const VAR_ANNOUNCE_CHANNEL: &str = "ANNOUNCEMENTS";
 const VAR_ANNOUNCE_ICON: &str = "ANNOUNCEMENT_ICON";
+const VAR_CACHE_ENTRIES: &str = "CACHE_ENTRIES";
 const VAR_COMMAND_PREFIX: &str = "COMMAND_PREFIX";
 const VAR_DELEGATE_ROLE: &str = "DELEGATE_ROLE";
 const VAR_DISCORD_TOKEN: &str = "DISCORD_TOKEN";
@@ -44,6 +46,7 @@ pub fn test_env() {
     // Try all enum variations
     get_var(Variables::AnnouncementIcon);
     get_var(Variables::AnnouncementsChannel);
+    get_var(Variables::CacheEntries);
     get_var(Variables::CommandPrefix);
     get_var(Variables::DelegateRole);
     get_var(Variables::DiscordToken);
@@ -62,6 +65,7 @@ pub fn get_var(var: Variables) -> String {
     match ENV(match var {
         Variables::AnnouncementIcon => VAR_ANNOUNCE_ICON,
         Variables::AnnouncementsChannel => VAR_ANNOUNCE_CHANNEL,
+        Variables::CacheEntries => VAR_CACHE_ENTRIES,
         Variables::CommandPrefix => VAR_COMMAND_PREFIX,
         Variables::DelegateRole => VAR_DELEGATE_ROLE,
         Variables::DiscordToken => VAR_DISCORD_TOKEN,
@@ -89,6 +93,10 @@ fn get_error(var: Variables) -> String {
         Variables::AnnouncementsChannel => format!(
             "No announcements channel defined!\nSet env var {} with the Discord channel id",
             VAR_ANNOUNCE_CHANNEL
+        ),
+        Variables::CacheEntries => format!(
+            "No number of cache entries defined!\nSet env var {} with an appropriate value",
+            VAR_CACHE_ENTRIES
         ),
         Variables::CommandPrefix => format!(
             "No command prefix defined!\nSet env var {} with the prefix",
