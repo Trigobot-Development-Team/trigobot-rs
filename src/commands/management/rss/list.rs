@@ -43,6 +43,10 @@ async fn list(ctx: &Context, msg: &Message) -> CommandResult {
                 cur.push_str(&tmp);
             }
         }
+
+        if !cur.is_empty() {
+            messages.push(cur);
+        }
     };
 
     for m in messages {
