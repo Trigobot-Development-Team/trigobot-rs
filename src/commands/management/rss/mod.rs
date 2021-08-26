@@ -28,7 +28,8 @@ use rm::RM_COMMAND;
 const MAX_COLOR_VALUE: u64 = 16777215;
 
 #[group]
-#[prefix = "rss"]
+#[prefix("rss")]
+#[summary("Commands to deal with RSS")]
 #[commands(add, import, list, mv, rm)]
 pub(crate) struct Rss;
 

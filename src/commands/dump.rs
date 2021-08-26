@@ -13,6 +13,7 @@ const ADDED_CHARS: usize = 12;
 const TOTAL_CHARS: usize = MESSAGE_MAX_LENGTH - ADDED_CHARS;
 
 #[command]
+#[description("Dump current saved state")]
 async fn dump(ctx: &Context, msg: &Message) -> CommandResult {
     let dump = {
         let lock = ctx.data.read().await;

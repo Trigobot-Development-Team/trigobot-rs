@@ -5,6 +5,7 @@ use serenity::model::channel::Message;
 use serenity::utils::MessageBuilder;
 
 #[command]
+#[description("Announce yourself to the world in a classy way")]
 async fn announce(ctx: &Context, msg: &Message) -> CommandResult {
     let user = msg.author.clone();
     let channel = msg.channel_id;

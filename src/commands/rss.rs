@@ -10,6 +10,7 @@ use serenity::model::channel::Message;
 use serenity::utils::MessageBuilder;
 
 #[command]
+#[description("Update all feeds")]
 async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
     {
         let mut lock = ctx.data.write().await;

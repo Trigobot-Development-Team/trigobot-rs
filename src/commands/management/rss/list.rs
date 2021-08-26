@@ -11,6 +11,7 @@ use serenity::utils::MessageBuilder;
 const MESSAGE_MAX_LENGTH: usize = 2000;
 
 #[command]
+#[description("Get feed status")]
 async fn list(ctx: &Context, msg: &Message) -> CommandResult {
     let mut messages: Vec<String> = Vec::new();
 

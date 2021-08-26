@@ -5,6 +5,9 @@ use serenity::model::channel::Message;
 use serenity::utils::MessageBuilder;
 
 #[command]
+#[description("Make the bot say something")]
+#[usage("<message>")]
+#[example("Hi")]
 async fn say(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
     let channel = msg.channel_id;
 

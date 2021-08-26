@@ -4,6 +4,7 @@ use serenity::framework::standard::CommandResult;
 use serenity::model::channel::Message;
 
 #[command]
+#[description("Remove the bot last message")]
 async fn undo(ctx: &Context, msg: &Message) -> CommandResult {
     let channel = msg.channel_id;
 
@@ -12,7 +13,7 @@ async fn undo(ctx: &Context, msg: &Message) -> CommandResult {
         match msg.delete(&ctx).await {
             Ok(_) => (),
             Err(_) => eprintln!(
-                "[EMAIL] Couldn't delete message from {} on channel {}",
+                "[UNDO] Couldn't delete message from {} on channel {}",
                 msg.author.name, msg.channel_id
             ),
         };

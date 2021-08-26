@@ -7,6 +7,7 @@ use serenity::utils::MessageBuilder;
 const LINK: &str = "https://github.com/afonsocrg/MEIC-feedback";
 
 #[command]
+#[description("Shows you were are the trap courses")]
 async fn traps(ctx: &Context, msg: &Message) -> CommandResult {
     msg.reply(
         ctx,

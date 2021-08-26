@@ -7,8 +7,9 @@ use self::rss::RSS_GROUP;
 use category::CATEGORY_COMMAND;
 
 #[group]
-#[prefix = "manage"]
+#[prefix("manage")]
 #[allowed_roles("Staff")]
+#[summary("Commands to manage state of the bot")]
 #[commands(category)]
 #[sub_groups(Rss)]
 struct Management;

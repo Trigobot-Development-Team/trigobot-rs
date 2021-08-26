@@ -1,5 +1,7 @@
 use std::collections::HashSet;
 
+use chrono::Utc;
+
 use serenity::client::Context;
 use serenity::framework::standard::macros::{group, help, hook};
 use serenity::framework::standard::{
@@ -32,6 +34,7 @@ use undo::UNDO_COMMAND;
 struct Commands;
 
 #[help]
+#[lacking_role("hide")]
 async fn help(
     context: &Context,
     msg: &Message,
@@ -47,7 +50,8 @@ async fn help(
 #[hook]
 pub async fn before_hook(_ctx: &Context, msg: &Message, _command: &str) -> bool {
     println!(
-        "[{}] on <#{}>: {}",
+        "[{}] {} on <#{}>: {}",
+        Utc::now().format("%F %T %Z"),
         msg.author.name,
         if msg.is_private() {
             "DM".to_string()

@@ -5,6 +5,7 @@ use serenity::model::channel::Message;
 use serenity::utils::MessageBuilder;
 
 #[command]
+#[description("Warns you about the issues of using emails")]
 async fn email(ctx: &Context, msg: &Message) -> CommandResult {
     let channel = msg.channel_id;
 
