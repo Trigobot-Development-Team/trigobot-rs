@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  trigobot:
+    build: .
+    container_name: "trigobot"
+    volumes:
+      - ./${STATE_FILE}:/home/trigobot/${STATE_FILE}
+      - ./.env:/home/trigobot/.env
