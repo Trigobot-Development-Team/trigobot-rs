@@ -12,7 +12,7 @@ use trigobot::*;
 #[tokio::main]
 async fn main() {
     // Check if all variables are correctly defined
-    test_env();
+    load_env();
 
     let token = get_var(Variables::DiscordToken);
 

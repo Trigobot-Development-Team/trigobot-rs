@@ -1,10 +1,15 @@
+use std::collections::HashMap;
 use std::env::var as ENV;
+use std::sync::RwLock;
 
 use dotenv::dotenv;
+
+use lazy_static::lazy_static;
 
 /// Environment testing and error handling
 
 /// Variables that can be used
+#[derive(Clone, Copy, Eq, Hash, PartialEq)]
 pub enum Variables {
     AnnouncementIcon,
     AnnouncementsChannel,
@@ -39,49 +44,73 @@ const VAR_RULES_CHANNEL: &str = "RULES_CHANNEL";
 const VAR_STATE_FILE: &str = "STATE_FILE";
 const VAR_WELCOME_CHANNEL: &str = "WELCOME_CHANNEL";
 
-pub fn test_env() {
+lazy_static! {
+    static ref BOT_CONFIG: RwLock<HashMap<Variables, String>> = RwLock::new(HashMap::new());
+}
+
+pub fn load_env() {
     // Load .env file vars
     dotenv().ok();
 
     // Try all enum variations
-    get_var(Variables::AnnouncementIcon);
-    get_var(Variables::AnnouncementsChannel);
-    get_var(Variables::CacheEntries);
-    get_var(Variables::CommandPrefix);
-    get_var(Variables::DelegateRole);
-    get_var(Variables::DiscordToken);
-    get_var(Variables::DomainsFile);
-    get_var(Variables::PinMinReactions);
-    get_var(Variables::PinReaction);
-    get_var(Variables::ReactionRole);
-    get_var(Variables::ReactionRolesChannel);
-    get_var(Variables::RssSleep);
-    get_var(Variables::RulesChannel);
-    get_var(Variables::StateFile);
-    get_var(Variables::WelcomeChannel);
+    populate_var(Variables::AnnouncementIcon);
+    populate_var(Variables::AnnouncementsChannel);
+    populate_var(Variables::CacheEntries);
+    populate_var(Variables::CommandPrefix);
+    populate_var(Variables::DelegateRole);
+    populate_var(Variables::DiscordToken);
+    populate_var(Variables::DomainsFile);
+    populate_var(Variables::PinMinReactions);
+    populate_var(Variables::PinReaction);
+    populate_var(Variables::ReactionRole);
+    populate_var(Variables::ReactionRolesChannel);
+    populate_var(Variables::RssSleep);
+    populate_var(Variables::RulesChannel);
+    populate_var(Variables::StateFile);
+    populate_var(Variables::WelcomeChannel);
 }
 
 pub fn get_var(var: Variables) -> String {
-    match ENV(match var {
-        Variables::AnnouncementIcon => VAR_ANNOUNCE_ICON,
-        Variables::AnnouncementsChannel => VAR_ANNOUNCE_CHANNEL,
-        Variables::CacheEntries => VAR_CACHE_ENTRIES,
-        Variables::CommandPrefix => VAR_COMMAND_PREFIX,
-        Variables::DelegateRole => VAR_DELEGATE_ROLE,
-        Variables::DiscordToken => VAR_DISCORD_TOKEN,
-        Variables::DomainsFile => VAR_DOMAINS_FILE,
-        Variables::PinMinReactions => VAR_PIN_MIN_REACTIONS,
-        Variables::PinReaction => VAR_PIN_REACTION,
-        Variables::ReactionRole => VAR_REACT_ROLE,
-        Variables::ReactionRolesChannel => VAR_REACT_ROLE_CHANNEL,
-        Variables::RssSleep => VAR_RSS_SLEEP,
-        Variables::RulesChannel => VAR_RULES_CHANNEL,
-        Variables::StateFile => VAR_STATE_FILE,
-        Variables::WelcomeChannel => VAR_WELCOME_CHANNEL,
-    }) {
+    let lock = match BOT_CONFIG.read() {
         Ok(val) => val,
-        Err(_) => panic!("{}", get_error(var)),
+        Err(e) => panic!("Poisoned config lock: {}", e),
+    };
+
+    match lock.get(&var) {
+        None => panic!("{}", get_error(var)),
+        Some(val) => val.to_owned(),
     }
+}
+
+fn populate_var(var: Variables) {
+    let mut lock = match BOT_CONFIG.write() {
+        Ok(val) => val,
+        Err(e) => panic!("Poisoned config lock: {}", e),
+    };
+
+    lock.insert(
+        var,
+        match ENV(match var {
+            Variables::AnnouncementIcon => VAR_ANNOUNCE_ICON,
+            Variables::AnnouncementsChannel => VAR_ANNOUNCE_CHANNEL,
+            Variables::CacheEntries => VAR_CACHE_ENTRIES,
+            Variables::CommandPrefix => VAR_COMMAND_PREFIX,
+            Variables::DelegateRole => VAR_DELEGATE_ROLE,
+            Variables::DiscordToken => VAR_DISCORD_TOKEN,
+            Variables::DomainsFile => VAR_DOMAINS_FILE,
+            Variables::PinMinReactions => VAR_PIN_MIN_REACTIONS,
+            Variables::PinReaction => VAR_PIN_REACTION,
+            Variables::ReactionRole => VAR_REACT_ROLE,
+            Variables::ReactionRolesChannel => VAR_REACT_ROLE_CHANNEL,
+            Variables::RssSleep => VAR_RSS_SLEEP,
+            Variables::RulesChannel => VAR_RULES_CHANNEL,
+            Variables::StateFile => VAR_STATE_FILE,
+            Variables::WelcomeChannel => VAR_WELCOME_CHANNEL,
+        }) {
+            Ok(val) => val,
+            Err(_) => panic!("{}", get_error(var)),
+        },
+    );
 }
 
 fn get_error(var: Variables) -> String {
