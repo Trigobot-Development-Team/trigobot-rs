@@ -1,10 +1,16 @@
 use std::collections::HashMap;
-use std::env::var as ENV;
+use std::env;
+use std::sync::mpsc::channel;
 use std::sync::RwLock;
+use std::time::Duration;
 
 use dotenv::dotenv;
 
 use lazy_static::lazy_static;
+
+use notify::{watcher, DebouncedEvent, RecursiveMode, Watcher};
+
+use serenity::Error;
 
 /// Environment testing and error handling
 
@@ -48,26 +54,115 @@ lazy_static! {
     static ref BOT_CONFIG: RwLock<HashMap<Variables, String>> = RwLock::new(HashMap::new());
 }
 
+/// Live reload config
+// Return type just to make the compiler happy
+pub async fn check_env() -> Result<(), Error> {
+    let (tx, rx) = channel();
+
+    let mut watcher = watcher(tx, Duration::from_secs(10)).unwrap();
+
+    watcher.watch(".env", RecursiveMode::NonRecursive).unwrap();
+
+    loop {
+        match rx.recv() {
+            Ok(event) => {
+                if let DebouncedEvent::Write(_) = event {
+                    clean_env();
+                    load_env();
+                }
+            }
+            Err(e) => eprintln!("Watch error: {}", e),
+        }
+    }
+}
+
+fn clean_env() {
+    env::remove_var(get_var_name(Variables::AnnouncementIcon));
+    env::remove_var(get_var_name(Variables::AnnouncementsChannel));
+    env::remove_var(get_var_name(Variables::CacheEntries));
+    env::remove_var(get_var_name(Variables::CommandPrefix));
+    env::remove_var(get_var_name(Variables::DelegateRole));
+    env::remove_var(get_var_name(Variables::DiscordToken));
+    env::remove_var(get_var_name(Variables::DomainsFile));
+    env::remove_var(get_var_name(Variables::PinMinReactions));
+    env::remove_var(get_var_name(Variables::PinReaction));
+    env::remove_var(get_var_name(Variables::ReactionRole));
+    env::remove_var(get_var_name(Variables::ReactionRolesChannel));
+    env::remove_var(get_var_name(Variables::RssSleep));
+    env::remove_var(get_var_name(Variables::RulesChannel));
+    env::remove_var(get_var_name(Variables::StateFile));
+    env::remove_var(get_var_name(Variables::WelcomeChannel));
+}
+
 pub fn load_env() {
     // Load .env file vars
-    dotenv().ok();
+    dotenv().unwrap();
 
     // Try all enum variations
-    populate_var(Variables::AnnouncementIcon);
-    populate_var(Variables::AnnouncementsChannel);
-    populate_var(Variables::CacheEntries);
-    populate_var(Variables::CommandPrefix);
-    populate_var(Variables::DelegateRole);
-    populate_var(Variables::DiscordToken);
-    populate_var(Variables::DomainsFile);
-    populate_var(Variables::PinMinReactions);
-    populate_var(Variables::PinReaction);
-    populate_var(Variables::ReactionRole);
-    populate_var(Variables::ReactionRolesChannel);
-    populate_var(Variables::RssSleep);
-    populate_var(Variables::RulesChannel);
-    populate_var(Variables::StateFile);
-    populate_var(Variables::WelcomeChannel);
+    let mut new_vals = HashMap::new();
+    new_vals.insert(
+        Variables::AnnouncementIcon,
+        get_var_from_env(Variables::AnnouncementIcon),
+    );
+    new_vals.insert(
+        Variables::AnnouncementsChannel,
+        get_var_from_env(Variables::AnnouncementsChannel),
+    );
+    new_vals.insert(
+        Variables::CacheEntries,
+        get_var_from_env(Variables::CacheEntries),
+    );
+    new_vals.insert(
+        Variables::CommandPrefix,
+        get_var_from_env(Variables::CommandPrefix),
+    );
+    new_vals.insert(
+        Variables::DelegateRole,
+        get_var_from_env(Variables::DelegateRole),
+    );
+    new_vals.insert(
+        Variables::DiscordToken,
+        get_var_from_env(Variables::DiscordToken),
+    );
+    new_vals.insert(
+        Variables::DomainsFile,
+        get_var_from_env(Variables::DomainsFile),
+    );
+    new_vals.insert(
+        Variables::PinMinReactions,
+        get_var_from_env(Variables::PinMinReactions),
+    );
+    new_vals.insert(
+        Variables::PinReaction,
+        get_var_from_env(Variables::PinReaction),
+    );
+    new_vals.insert(
+        Variables::ReactionRole,
+        get_var_from_env(Variables::ReactionRole),
+    );
+    new_vals.insert(
+        Variables::ReactionRolesChannel,
+        get_var_from_env(Variables::ReactionRolesChannel),
+    );
+    new_vals.insert(Variables::RssSleep, get_var_from_env(Variables::RssSleep));
+    new_vals.insert(
+        Variables::RulesChannel,
+        get_var_from_env(Variables::RulesChannel),
+    );
+    new_vals.insert(Variables::StateFile, get_var_from_env(Variables::StateFile));
+    new_vals.insert(
+        Variables::WelcomeChannel,
+        get_var_from_env(Variables::WelcomeChannel),
+    );
+
+    let mut lock = match BOT_CONFIG.write() {
+        Ok(val) => val,
+        Err(e) => panic!("Poisoned config lock: {}", e),
+    };
+
+    lock.clear();
+
+    lock.extend(new_vals);
 }
 
 pub fn get_var(var: Variables) -> String {
@@ -82,35 +177,31 @@ pub fn get_var(var: Variables) -> String {
     }
 }
 
-fn populate_var(var: Variables) {
-    let mut lock = match BOT_CONFIG.write() {
+fn get_var_from_env(var: Variables) -> String {
+    match env::var(get_var_name(var)) {
         Ok(val) => val,
-        Err(e) => panic!("Poisoned config lock: {}", e),
-    };
+        Err(_) => panic!("{}", get_error(var)),
+    }
+}
 
-    lock.insert(
-        var,
-        match ENV(match var {
-            Variables::AnnouncementIcon => VAR_ANNOUNCE_ICON,
-            Variables::AnnouncementsChannel => VAR_ANNOUNCE_CHANNEL,
-            Variables::CacheEntries => VAR_CACHE_ENTRIES,
-            Variables::CommandPrefix => VAR_COMMAND_PREFIX,
-            Variables::DelegateRole => VAR_DELEGATE_ROLE,
-            Variables::DiscordToken => VAR_DISCORD_TOKEN,
-            Variables::DomainsFile => VAR_DOMAINS_FILE,
-            Variables::PinMinReactions => VAR_PIN_MIN_REACTIONS,
-            Variables::PinReaction => VAR_PIN_REACTION,
-            Variables::ReactionRole => VAR_REACT_ROLE,
-            Variables::ReactionRolesChannel => VAR_REACT_ROLE_CHANNEL,
-            Variables::RssSleep => VAR_RSS_SLEEP,
-            Variables::RulesChannel => VAR_RULES_CHANNEL,
-            Variables::StateFile => VAR_STATE_FILE,
-            Variables::WelcomeChannel => VAR_WELCOME_CHANNEL,
-        }) {
-            Ok(val) => val,
-            Err(_) => panic!("{}", get_error(var)),
-        },
-    );
+fn get_var_name(var: Variables) -> &'static str {
+    match var {
+        Variables::AnnouncementIcon => VAR_ANNOUNCE_ICON,
+        Variables::AnnouncementsChannel => VAR_ANNOUNCE_CHANNEL,
+        Variables::CacheEntries => VAR_CACHE_ENTRIES,
+        Variables::CommandPrefix => VAR_COMMAND_PREFIX,
+        Variables::DelegateRole => VAR_DELEGATE_ROLE,
+        Variables::DiscordToken => VAR_DISCORD_TOKEN,
+        Variables::DomainsFile => VAR_DOMAINS_FILE,
+        Variables::PinMinReactions => VAR_PIN_MIN_REACTIONS,
+        Variables::PinReaction => VAR_PIN_REACTION,
+        Variables::ReactionRole => VAR_REACT_ROLE,
+        Variables::ReactionRolesChannel => VAR_REACT_ROLE_CHANNEL,
+        Variables::RssSleep => VAR_RSS_SLEEP,
+        Variables::RulesChannel => VAR_RULES_CHANNEL,
+        Variables::StateFile => VAR_STATE_FILE,
+        Variables::WelcomeChannel => VAR_WELCOME_CHANNEL,
+    }
 }
 
 fn get_error(var: Variables) -> String {
