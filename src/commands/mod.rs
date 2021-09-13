@@ -14,6 +14,7 @@ mod announce;
 mod dump;
 mod email;
 mod management;
+mod roles;
 mod rss;
 mod say;
 mod traps;
@@ -24,13 +25,14 @@ use announce::ANNOUNCE_COMMAND;
 use dump::DUMP_COMMAND;
 use email::EMAIL_COMMAND;
 use management::MANAGEMENT_GROUP;
+use roles::ROLES_GROUP;
 use say::SAY_COMMAND;
 use traps::TRAPS_COMMAND;
 use undo::UNDO_COMMAND;
 
 #[group]
 #[commands(announce, dump, email, rss, say, traps, undo)]
-#[sub_groups(Management)]
+#[sub_groups(Management, Roles)]
 struct Commands;
 
 #[help]

@@ -22,6 +22,7 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
+use serenity::model::id::RoleId;
 use serenity::prelude::TypeMapKey;
 use serenity::CacheAndHttp;
 use serenity::Result as SResult;
@@ -50,6 +51,13 @@ impl State {
 
     pub(crate) fn get_mut_messages(&mut self) -> &mut HashMap<u64, u64> {
         &mut self.messages
+    }
+
+    pub(crate) fn get_feeds_simple(&self) -> HashMap<String, RoleId> {
+        self.feeds
+            .iter()
+            .map(|(name, feed)| (name.to_string(), feed.get_role()))
+            .collect()
     }
 
     pub(crate) fn get_feeds(&self) -> &HashMap<String, Feed> {

@@ -66,14 +66,12 @@ pub async fn check_env() -> Result<(), Error> {
 
         watcher.watch(".env", RecursiveMode::NonRecursive).unwrap();
 
-        println!("Updating");
         loop {
             match rx.recv() {
                 Ok(event) => {
                     if let DebouncedEvent::Write(_) = event {
                         clean_env();
                         load_env();
-                        println!("Updated");
                     }
                 }
                 Err(e) => eprintln!("Watch error: {}", e),
