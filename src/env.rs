@@ -12,6 +12,8 @@ use notify::{watcher, DebouncedEvent, RecursiveMode, Watcher};
 
 use serenity::Error;
 
+use tokio::task;
+
 /// Environment testing and error handling
 
 /// Variables that can be used
@@ -57,23 +59,29 @@ lazy_static! {
 /// Live reload config
 // Return type just to make the compiler happy
 pub async fn check_env() -> Result<(), Error> {
-    let (tx, rx) = channel();
+    task::spawn_blocking(move || {
+        let (tx, rx) = channel();
 
-    let mut watcher = watcher(tx, Duration::from_secs(10)).unwrap();
+        let mut watcher = watcher(tx, Duration::from_secs(10)).unwrap();
 
-    watcher.watch(".env", RecursiveMode::NonRecursive).unwrap();
+        watcher.watch(".env", RecursiveMode::NonRecursive).unwrap();
 
-    loop {
-        match rx.recv() {
-            Ok(event) => {
-                if let DebouncedEvent::Write(_) = event {
-                    clean_env();
-                    load_env();
+        println!("Updating");
+        loop {
+            match rx.recv() {
+                Ok(event) => {
+                    if let DebouncedEvent::Write(_) = event {
+                        clean_env();
+                        load_env();
+                        println!("Updated");
+                    }
                 }
+                Err(e) => eprintln!("Watch error: {}", e),
             }
-            Err(e) => eprintln!("Watch error: {}", e),
         }
-    }
+    });
+
+    Ok(())
 }
 
 fn clean_env() {
