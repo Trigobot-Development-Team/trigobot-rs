@@ -19,6 +19,7 @@ use std::fs;
 use std::io::Result;
 use std::sync::Arc;
 use std::time::Duration;
+use std::path::Path;
 
 use serde::{Deserialize, Serialize};
 
@@ -73,14 +74,24 @@ impl State {
     }
 
     /// Save a list of feeds to a file
-    pub fn save_to_file(file: &str, value: &State) -> Result<()> {
-        fs::write(file, bincode::serialize(&value).unwrap())?;
+    pub fn save_to_file(file_path: impl AsRef<Path>, value: &State) -> Result<()> {
+        use std::io::Write;
+
+        let state_bytes = bincode::serialize(&value)
+            .expect("failed to serialize state");
+
+        // We use a tempfile to make the state saving crash-safe
+        let mut tmp = tempfile::NamedTempFile::new()?;
+        tmp.write_all(&state_bytes)?;
+
+        // atomically moves the tempfile to its final location
+        tmp.persist(file_path)?;
 
         Ok(())
     }
 
     /// Load a list of feeds from a file
-    pub fn load_from_file(file: &str) -> Result<State> {
+    pub fn load_from_file(file: impl AsRef<Path>) -> Result<State> {
         match bincode::deserialize(&fs::read(file)?) {
             Ok(val) => Ok(val),
             Err(e) => panic!("Invalid data!\nFeeds couldn't be loaded: {}", e),

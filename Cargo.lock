@@ -1915,6 +1915,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serenity",
+ "tempfile",
  "tokio",
  "tonic",
  "tonic-build",
