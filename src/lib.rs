@@ -81,7 +81,9 @@ impl State {
             .expect("failed to serialize state");
 
         // We use a tempfile to make the state saving crash-safe
-        let mut tmp = tempfile::NamedTempFile::new()?;
+        // Save it in the same directory as the state file to prevent moving errors
+        let tmpdir = file_path.as_ref().parent().unwrap_or_else(|| Path::new("."));
+        let mut tmp = tempfile::NamedTempFile::new_in(tmpdir)?;
         tmp.write_all(&state_bytes)?;
 
         // atomically moves the tempfile to its final location
