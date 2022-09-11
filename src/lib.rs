@@ -122,8 +122,8 @@ pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<RwLock<State>>) -> ! {
     sleep(Duration::new(TIME_BEFORE_UPDATE, 0)).await;
 
     loop {
-        if let Err(cause) = update_all_feeds(&client, &mut *state.write().await).await {
-            tracing::error!(%cause, "Failed to update feeds");
+        if let Err(_) = update_all_feeds(&client, &mut *state.write().await).await {
+            // don't crash
         }
         sleep(time).await;
     }

@@ -4,49 +4,70 @@ mod message;
 
 pub(crate) use cache::*;
 pub use feed::*;
+use futures::TryFutureExt;
+use futures::future::join_all;
+use futures::stream::FuturesUnordered;
+use futures::FutureExt;
+use futures::StreamExt;
 pub(crate) use message::*;
 
 use crate::env::*;
 use crate::State;
 
-use futures::future::join_all;
-
+use eyre::{eyre, WrapErr};
 use serenity::http::CacheHttp;
 use serenity::model::id::{ChannelId, RoleId};
 use serenity::utils::{Colour, MessageBuilder};
-use eyre::{Result, WrapErr, eyre};
 
 const EMBED_MAX_DESC: usize = 4096;
 
 /// Update **ALL** feeds
-pub(crate) async fn update_all_feeds<T: CacheHttp>(ctx: T, state: &mut State) -> Result<()> {
-    join_all(
-        state
-            .get_mut_feeds()
-            .values_mut()
-            .into_iter()
-            .map(|f| update_feed(&ctx, f))
-            .collect::<Vec<_>>(),
-    )
-    .await;
+#[tracing::instrument(skip_all)]
+pub(crate) async fn update_all_feeds<T: CacheHttp>(
+    ctx: T,
+    state: &mut State,
+) -> Result<(), Vec<(String, eyre::Report)>> {
+    let feed_updates = state
+        .get_mut_feeds()
+        .values_mut()
+        .into_iter()
+        .map(|feed| {
+            let name = feed.get_name().clone();
+            update_feed(&ctx, feed).map_err(|e| (name, e))
+        })
+        .collect::<FuturesUnordered<_>>();
 
-    State::save_to_file(&get_var(Variables::StateFile), state)
+    let mut errors = feed_updates
+        .filter_map(|res| async move { res.err() })
+        .collect::<Vec<_>>()
+        .await;
+
+    if let Err(error) = State::save_to_file(&get_var(Variables::StateFile), state) {
+        tracing::error!(%error, "failed to save state after feed updates");
+        errors.push(("(none)".to_owned(), error.wrap_err("failed to save state after feed updates")));
+    }
+
+    if errors.is_empty() {
+        Ok(())
+    } else {
+        Err(errors)
+    }
 }
 
-#[tracing::instrument(skip(ctx))]
-async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> Result<()> {
+#[tracing::instrument(skip(ctx), err)]
+async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> eyre::Result<()> {
     let announcements_channel = ChannelId(
         get_var(Variables::AnnouncementsChannel)
             .parse::<u64>()
-            .wrap_err("Invalid announcement channel ID")?,
+            .trace_wrap_err("(announcement) channel id must be a valid u64")?,
     );
 
     let role = feed.get_role();
 
     let color = role
-        .to_role_cached(&ctx.cache().ok_or(eyre!("no cache provided"))?)
+        .to_role_cached(&ctx.cache().ok_or(eyre!("no cache provided")).trace_err()?)
         .await
-        .ok_or(eyre!("failed to fetch role for feed"))?
+        .ok_or(eyre!("failed to fetch role")).trace_err()?
         .colour;
 
     let update_ts = feed.get_update();
@@ -69,7 +90,8 @@ async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> Result<()> {
                         role,
                         color,
                     )
-                    .await?
+                    .await
+                    .trace_wrap_err("error editing announcement")?
                 } else {
                     continue;
                 }
@@ -78,7 +100,8 @@ async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> Result<()> {
             }
         } else {
             publish_announcement(ctx, announcements_channel, feed.get_name(), m, role, color)
-                .await?
+                .await
+                .trace_wrap_err("error publishing announcement")?
         };
 
         feed.cache(id, copy);
@@ -94,7 +117,7 @@ async fn publish_announcement<T: CacheHttp>(
     message: Message,
     role: RoleId,
     color: Colour,
-) -> Result<u64> {
+) -> eyre::Result<u64> {
     Ok(announcements_channel
         .send_message(&ctx.http(), |a| {
             a.content(
@@ -149,9 +172,10 @@ async fn edit_announcement<T: CacheHttp>(
     message: Message,
     role: RoleId,
     color: Colour,
-) -> Result<u64> {
+) -> eyre::Result<u64> {
     // Get old message
-    let old_msg = announcements_channel.message(&ctx.http(), old_id).await?;
+    let old_msg = announcements_channel.message(&ctx.http(), old_id).await
+        .trace_wrap_err("error fetching previous announcement")?;
 
     // Edit old announcement
     announcements_channel
@@ -204,4 +228,35 @@ fn prune_msg(msg: &str, len: usize) -> String {
         .unwrap()
         .iter()
         .collect()
+}
+
+trait ResultTraceWrapErrorExt<T, E> {
+    fn trace_wrap_err(self, msg: &'static str) -> eyre::Result<T>;
+    fn trace_err(self) -> Result<T, E>;
+}
+
+impl<T, E> ResultTraceWrapErrorExt<T, E> for Result<T, E>
+where
+    E: std::fmt::Display,
+    Result<T, E>: eyre::WrapErr<T, E>,
+{
+    fn trace_wrap_err(self, msg: &'static str) -> Result<T, eyre::Report> {
+        match self {
+            Ok(v) => Ok(v),
+            Err(error) => {
+                tracing::error!(%error, msg);
+                Err(error).wrap_err(msg)
+            }
+        }
+    }
+
+    fn trace_err(self) -> Result<T, E> {
+        match self {
+            Ok(v) => Ok(v),
+            Err(error) => {
+                tracing::error!(%error);
+                Err(error)
+            }
+        }
+    }
 }
