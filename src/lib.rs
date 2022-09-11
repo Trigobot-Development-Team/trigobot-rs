@@ -16,7 +16,6 @@ pub use self::events::Handler;
 
 use std::collections::HashMap;
 use std::fs;
-use std::io::Result;
 use std::path::Path;
 use std::sync::Arc;
 use std::time::Duration;
@@ -26,10 +25,11 @@ use serde::{Deserialize, Serialize};
 use serenity::model::id::RoleId;
 use serenity::prelude::TypeMapKey;
 use serenity::CacheAndHttp;
-use serenity::Result as SResult;
 
 use tokio::sync::RwLock;
 use tokio::time::sleep;
+
+use eyre::{Result, WrapErr};
 
 const TIME_BEFORE_UPDATE: u64 = 60; // 60 seconds
 
@@ -77,7 +77,8 @@ impl State {
     pub fn save_to_file(file_path: impl AsRef<Path>, value: &State) -> Result<()> {
         use std::io::Write;
 
-        let state_bytes = bincode::serialize(&value).expect("failed to serialize state");
+        let state_bytes = bincode::serialize(&value)
+            .wrap_err("failed to serialize state")?;
 
         // We use a tempfile to make the state saving crash-safe
         // Save it in the same directory as the state file to prevent moving errors
@@ -109,7 +110,7 @@ impl TypeMapKey for State {
 }
 
 /// Loop to update RSS feeds continuously
-pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<RwLock<State>>) -> SResult<()> {
+pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<RwLock<State>>) -> ! {
     let time = Duration::new(
         get_var(Variables::RssSleep)
             .parse::<u64>()
@@ -121,7 +122,9 @@ pub async fn rss(client: Arc<CacheAndHttp>, state: Arc<RwLock<State>>) -> SResul
     sleep(Duration::new(TIME_BEFORE_UPDATE, 0)).await;
 
     loop {
-        update_all_feeds(&client, &mut *state.write().await).await?;
+        if let Err(cause) = update_all_feeds(&client, &mut *state.write().await).await {
+            tracing::error!(%cause, "Failed to update feeds");
+        }
         sleep(time).await;
     }
 }

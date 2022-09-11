@@ -14,12 +14,12 @@ use futures::future::join_all;
 use serenity::http::CacheHttp;
 use serenity::model::id::{ChannelId, RoleId};
 use serenity::utils::{Colour, MessageBuilder};
-use serenity::Error;
+use eyre::{Result, WrapErr, eyre};
 
 const EMBED_MAX_DESC: usize = 4096;
 
 /// Update **ALL** feeds
-pub(crate) async fn update_all_feeds<T: CacheHttp>(ctx: T, state: &mut State) -> Result<(), Error> {
+pub(crate) async fn update_all_feeds<T: CacheHttp>(ctx: T, state: &mut State) -> Result<()> {
     join_all(
         state
             .get_mut_feeds()
@@ -30,27 +30,23 @@ pub(crate) async fn update_all_feeds<T: CacheHttp>(ctx: T, state: &mut State) ->
     )
     .await;
 
-    match State::save_to_file(&get_var(Variables::StateFile), state) {
-        Ok(_) => (),
-        Err(e) => eprintln!("Error saving state: {}", e),
-    };
-
-    Ok(())
+    State::save_to_file(&get_var(Variables::StateFile), state)
 }
 
-async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> Result<(), Error> {
+#[tracing::instrument(skip(ctx))]
+async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> Result<()> {
     let announcements_channel = ChannelId(
         get_var(Variables::AnnouncementsChannel)
             .parse::<u64>()
-            .expect("Announcement channel id is not valid!"),
+            .wrap_err("Invalid announcement channel ID")?,
     );
 
     let role = feed.get_role();
 
     let color = role
-        .to_role_cached(&ctx.cache().expect("No cache provided"))
+        .to_role_cached(&ctx.cache().ok_or(eyre!("no cache provided"))?)
         .await
-        .unwrap()
+        .ok_or(eyre!("failed to fetch role for feed"))?
         .colour;
 
     let update_ts = feed.get_update();
@@ -98,7 +94,7 @@ async fn publish_announcement<T: CacheHttp>(
     message: Message,
     role: RoleId,
     color: Colour,
-) -> Result<u64, Error> {
+) -> Result<u64> {
     Ok(announcements_channel
         .send_message(&ctx.http(), |a| {
             a.content(
@@ -153,7 +149,7 @@ async fn edit_announcement<T: CacheHttp>(
     message: Message,
     role: RoleId,
     color: Colour,
-) -> Result<u64, Error> {
+) -> Result<u64> {
     // Get old message
     let old_msg = announcements_channel.message(&ctx.http(), old_id).await?;
 

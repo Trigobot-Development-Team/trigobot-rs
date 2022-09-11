@@ -20,7 +20,7 @@ use serenity::model::id::{ChannelId, MessageId, RoleId};
 /// + its channel on the server
 /// + the message to give the role
 /// + the last time it was updated
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Debug)]
 pub struct Feed {
     name: String,
     link: String,

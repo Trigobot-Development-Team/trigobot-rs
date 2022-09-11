@@ -1,5 +1,6 @@
 use std::sync::Arc;
 
+use futures::FutureExt;
 use serenity::client::bridge::gateway::GatewayIntents;
 use serenity::framework::StandardFramework;
 use serenity::prelude::*;
@@ -13,6 +14,9 @@ use trigobot::*;
 async fn main() {
     // Check if all variables are correctly defined
     load_env();
+
+    let subscriber = tracing_subscriber::fmt().finish();
+    tracing::subscriber::set_global_default(subscriber).expect("Failed to setup console logging");
 
     let token = get_var(Variables::DiscordToken);
 
@@ -40,8 +44,8 @@ async fn main() {
     let state = Arc::new(RwLock::new(
         match State::load_from_file(&get_var(Variables::StateFile)) {
             Ok(val) => val,
-            Err(e) => {
-                eprintln!("Couldn't load feeds from file: {}\n", e);
+            Err(error) => {
+                tracing::error!(%error, "Couldn't load feeds from file");
 
                 State::new()
             }
@@ -56,7 +60,7 @@ async fn main() {
 
     let http_client = Arc::clone(&client.cache_and_http);
 
-    match try_join!(client.start(), rss(http_client, state), check_env()) {
+    match try_join!(client.start(), rss(http_client, state).map(|_| Ok(())), check_env()) {
         Ok(_) => (),
         Err(e) => eprintln!("An error occurred: {}", e),
     }

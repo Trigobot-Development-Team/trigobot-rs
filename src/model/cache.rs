@@ -4,7 +4,7 @@ use std::hash::Hash;
 use serde::{Deserialize, Serialize};
 
 /// Custom implementation of cache that is serializable
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Default, Deserialize, Serialize, Debug)]
 pub(crate) struct Cache<K: Hash + Eq + Clone, V> {
     storage: VecDeque<K>,
     keys: HashMap<K, V>,
