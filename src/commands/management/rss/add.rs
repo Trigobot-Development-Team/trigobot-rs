@@ -62,8 +62,9 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                         None,
                     ),
                 ) {
-                    rm_feed_message(ctx, old.get_message()).await?;
-
+                    if let Err(error) = rm_feed_message(ctx, old.get_message()).await {
+                        tracing::warn!(%error, "failed to remove old feed registration message")
+                    }
                     state.get_mut_messages().remove(&old.get_message().0);
                 }
 
