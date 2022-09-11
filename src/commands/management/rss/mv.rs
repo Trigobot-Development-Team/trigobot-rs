@@ -14,8 +14,8 @@ use serenity::model::channel::Message;
 #[num_args(2)]
 #[only_in(guilds)]
 async fn mv(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let old_name = args.single::<String>().unwrap();
-    let new_name = args.single::<String>().unwrap();
+    let old_name = args.single::<String>()?;
+    let new_name = args.single::<String>()?;
 
     {
         let mut lock = ctx.data.write().await;

@@ -14,7 +14,7 @@ use serenity::model::channel::Message;
 #[example("IEI")]
 #[num_args(1)]
 async fn rm(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let name = args.single::<String>().unwrap();
+    let name = args.single::<String>()?;
 
     {
         let mut lock = ctx.data.write().await;

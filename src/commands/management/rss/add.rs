@@ -18,8 +18,8 @@ use serenity::model::id::ChannelId;
 #[num_args(2)]
 #[only_in(guilds)]
 async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
-    let name = args.single::<String>().unwrap();
-    let link = args.single::<String>().unwrap();
+    let name = args.single::<String>()?;
+    let link = args.single::<String>()?;
 
     if Feed::test_link(&link).await {
         let category = {
