@@ -198,8 +198,11 @@ impl EventHandler for Handler {
     }
 }
 
-
-async fn cleanup_old_react_message(ctx: &Context, reaction: Reaction, err: serenity::Error) -> eyre::Result<()> {
+async fn cleanup_old_react_message(
+    ctx: &Context,
+    reaction: Reaction,
+    err: serenity::Error,
+) -> eyre::Result<()> {
     if err.to_string() == "Unknown Role" {
         let m = reaction.message(&ctx.http).await?;
         m.delete(&ctx.http).await?;
