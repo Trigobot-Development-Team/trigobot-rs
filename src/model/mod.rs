@@ -4,9 +4,7 @@ mod message;
 
 pub(crate) use cache::*;
 pub use feed::*;
-use futures::future::join_all;
 use futures::stream::FuturesUnordered;
-use futures::FutureExt;
 use futures::StreamExt;
 use futures::TryFutureExt;
 pub(crate) use message::*;

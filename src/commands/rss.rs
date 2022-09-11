@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use serenity::client::Context;
 use serenity::framework::standard::macros::command;
-use serenity::framework::standard::{CommandError, CommandResult};
+use serenity::framework::standard::CommandResult;
 use serenity::model::channel::Message;
 use serenity::utils::MessageBuilder;
 
