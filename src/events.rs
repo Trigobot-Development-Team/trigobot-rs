@@ -91,7 +91,7 @@ impl EventHandler for Handler {
                         match reaction.user(&ctx).await {
                             Ok(u) => u,
                             Err(e) => {
-                                eprintln!("Invalid user reacted: {}", e);
+                                tracing::error!("Invalid user reacted: {}", e);
                                 return;
                             }
                         },
@@ -100,7 +100,7 @@ impl EventHandler for Handler {
                 {
                     Ok(m) => m,
                     Err(e) => {
-                        eprintln!("Invalid member reacted: {}", e);
+                        tracing::error!("Invalid member reacted: {}", e);
                         return;
                     }
                 }
@@ -109,7 +109,8 @@ impl EventHandler for Handler {
                 {
                     Ok(_) => (),
                     Err(e) => {
-                        eprintln!("Couldn't give role {}: {}", role, e);
+                        tracing::error!("Couldn't give role {}: {}", role, e);
+                        let _ = cleanup_old_react_message(&ctx, reaction, e).await;
                         return;
                     }
                 }
@@ -188,10 +189,21 @@ impl EventHandler for Handler {
                     Ok(_) => (),
                     Err(e) => {
                         eprintln!("Couldn't give role {}: {}", role, e);
+                        let _ = cleanup_old_react_message(&ctx, reaction, e).await;
                         return;
                     }
                 }
             }
         };
     }
+}
+
+
+async fn cleanup_old_react_message(ctx: &Context, reaction: Reaction, err: serenity::Error) -> eyre::Result<()> {
+    if err.to_string() == "Unknown Role" {
+        let m = reaction.message(&ctx.http).await?;
+        m.delete(&ctx.http).await?;
+    }
+
+    Ok(())
 }
