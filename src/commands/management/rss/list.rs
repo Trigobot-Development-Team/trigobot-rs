@@ -22,7 +22,7 @@ async fn list(ctx: &Context, msg: &Message) -> CommandResult {
 
         let mut cur = String::new();
 
-        for f in state.get_feeds().values().into_iter() {
+        for f in state.get_feeds().values() {
             let tmp = MessageBuilder::new()
                 .push_bold(f.get_name())
                 .push(": ")

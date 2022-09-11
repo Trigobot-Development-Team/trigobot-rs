@@ -49,13 +49,13 @@ pub(crate) async fn add_feed_role(
         return Ok(role.unwrap().to_owned());
     }
 
-    Ok(guild
+    guild
         .create_role(ctx, |r| {
             r.name(name)
                 .mentionable(true)
                 .colour(thread_rng().gen_range(0..MAX_COLOR_VALUE))
         })
-        .await?)
+        .await
 }
 
 /// Create a channel if it doesn't exist and return it
@@ -99,7 +99,7 @@ pub(crate) async fn add_feed_channel(
         )),
     };
 
-    Ok(guild
+    guild
         .create_channel(ctx, |c| {
             c.name(name)
                 .kind(ChannelType::Text)
@@ -110,7 +110,7 @@ pub(crate) async fn add_feed_channel(
                 ])
                 .category(category)
         })
-        .await?)
+        .await
 }
 
 /// Add feed reaction role message

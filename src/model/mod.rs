@@ -30,7 +30,7 @@ pub(crate) async fn update_all_feeds<T: CacheHttp>(
         .values_mut()
         .into_iter()
         .map(|feed| {
-            let name = feed.get_name().clone();
+            let name = feed.get_name();
             update_feed(&ctx, feed).map_err(|e| (name, e))
         })
         .collect::<FuturesUnordered<_>>();
