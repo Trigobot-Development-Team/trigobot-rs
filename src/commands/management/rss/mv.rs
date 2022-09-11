@@ -34,7 +34,7 @@ async fn mv(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             let role = feed.get_role();
 
             // Change reaction role message
-            rm_feed_message(ctx, old_msg).await?;
+            let _ = rm_feed_message(ctx, old_msg).await;
             let new_msg = add_feed_message(ctx, &new_name, role, feed.get_channel()).await?;
             feed.set_message(new_msg.0);
 
