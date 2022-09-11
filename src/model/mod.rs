@@ -4,11 +4,11 @@ mod message;
 
 pub(crate) use cache::*;
 pub use feed::*;
-use futures::TryFutureExt;
 use futures::future::join_all;
 use futures::stream::FuturesUnordered;
 use futures::FutureExt;
 use futures::StreamExt;
+use futures::TryFutureExt;
 pub(crate) use message::*;
 
 use crate::env::*;
@@ -44,7 +44,10 @@ pub(crate) async fn update_all_feeds<T: CacheHttp>(
 
     if let Err(error) = State::save_to_file(&get_var(Variables::StateFile), state) {
         tracing::error!(%error, "failed to save state after feed updates");
-        errors.push(("(none)".to_owned(), error.wrap_err("failed to save state after feed updates")));
+        errors.push((
+            "(none)".to_owned(),
+            error.wrap_err("failed to save state after feed updates"),
+        ));
     }
 
     if errors.is_empty() {
@@ -67,7 +70,8 @@ async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> eyre::Result<()>
     let color = role
         .to_role_cached(&ctx.cache().ok_or(eyre!("no cache provided")).trace_err()?)
         .await
-        .ok_or(eyre!("failed to fetch role")).trace_err()?
+        .ok_or(eyre!("failed to fetch role"))
+        .trace_err()?
         .colour;
 
     let update_ts = feed.get_update();
@@ -174,7 +178,9 @@ async fn edit_announcement<T: CacheHttp>(
     color: Colour,
 ) -> eyre::Result<u64> {
     // Get old message
-    let old_msg = announcements_channel.message(&ctx.http(), old_id).await
+    let old_msg = announcements_channel
+        .message(&ctx.http(), old_id)
+        .await
         .trace_wrap_err("error fetching previous announcement")?;
 
     // Edit old announcement

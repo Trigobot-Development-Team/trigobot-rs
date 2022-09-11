@@ -60,7 +60,11 @@ async fn main() {
 
     let http_client = Arc::clone(&client.cache_and_http);
 
-    match try_join!(client.start(), rss(http_client, state).map(|_| Ok(())), check_env()) {
+    match try_join!(
+        client.start(),
+        rss(http_client, state).map(|_| Ok(())),
+        check_env()
+    ) {
         Ok(_) => (),
         Err(e) => eprintln!("An error occurred: {}", e),
     }

@@ -77,8 +77,7 @@ impl State {
     pub fn save_to_file(file_path: impl AsRef<Path>, value: &State) -> Result<()> {
         use std::io::Write;
 
-        let state_bytes = bincode::serialize(&value)
-            .wrap_err("failed to serialize state")?;
+        let state_bytes = bincode::serialize(&value).wrap_err("failed to serialize state")?;
 
         // We use a tempfile to make the state saving crash-safe
         // Save it in the same directory as the state file to prevent moving errors

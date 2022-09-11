@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use serenity::client::Context;
 use serenity::framework::standard::macros::command;
-use serenity::framework::standard::{CommandResult, CommandError};
+use serenity::framework::standard::{CommandError, CommandResult};
 use serenity::model::channel::Message;
 use serenity::utils::MessageBuilder;
 
@@ -39,7 +39,12 @@ async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
                 msg.reply(
                     ctx,
                     MessageBuilder::new()
-                        .push(format!("Erro {}/{} a atualizar feed {}:\n", i+1, errors.len(), feed_name))
+                        .push(format!(
+                            "Erro {}/{} a atualizar feed {}:\n",
+                            i + 1,
+                            errors.len(),
+                            feed_name
+                        ))
                         .push(err.to_string())
                         .build(),
                 )
@@ -47,7 +52,6 @@ async fn rss(ctx: &Context, msg: &Message) -> CommandResult {
             }
         }
     }
-
 
     Ok(())
 }
