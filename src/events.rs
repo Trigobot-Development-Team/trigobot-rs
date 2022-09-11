@@ -5,7 +5,7 @@ use serenity::async_trait;
 use serenity::http::HttpError;
 use serenity::model::channel::Reaction;
 use serenity::model::guild::Member;
-use serenity::model::id::ChannelId;
+use serenity::model::id::{ChannelId, GuildId};
 use serenity::prelude::*;
 use serenity::utils::MessageBuilder;
 
