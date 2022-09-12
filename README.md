@@ -1,12 +1,12 @@
 # Trigobot
 
-Trigobot is a Discord bot developed by some (LEIC-A)[https://fenix.tecnico.ulisboa.pt/cursos/leic-a] students who started studying at (Instituto Superior Técnico)[https://www.tecnico.pt] in 2017. It was later updated to match the needs of the (MEIC degree)[https://fenix.tecnico.ulisboa.pt/cursos/meic-a].
+Trigobot is a Discord bot developed by some [LEIC-A](https://fenix.tecnico.ulisboa.pt/cursos/leic-a) students who started studying at [Instituto Superior Técnico](https://www.tecnico.pt) in 2017. It was later updated to match the needs of the [MEIC degree](https://fenix.tecnico.ulisboa.pt/cursos/meic-a).
 
 Trigobot notifies the students in the server whenever a teacher adds or edits one announcement in the Fénix (faculty's official website for evaluation and information). It does this by periodically scanning the RSS feed of each course it is configured to monitor.
 
 For the MEIC upgrade, because there were a lot of courses and not everybody was having the same courses, the bot was improved with the capability of creating a channel and a role for each course, as well as a message in which the students could react in order to receive the role.
 
-This bot was initially developed in Python (still available in an (old repository)[https://github.com/Trigobot-Development-Team/trigobot]) but now has been updated to the Rust language, using Serenity, to achieve better performance. It has been dockerized, meaning we don't need to have the Rust tools at hand in order to build and run it.
+This bot was initially developed in Python (still available in an [old repository](https://github.com/Trigobot-Development-Team/trigobot)) but now has been updated to the Rust language, using Serenity, to achieve better performance. It has been dockerized, meaning we don't need to have the Rust tools at hand in order to build and run it.
 
 Trigobot is configurable through a `.env` file.
 
@@ -64,6 +64,8 @@ This JSON has the following format:
   ...
 }
 ```
+
+This JSON can be created automatically with the `finder.py` script
 
 The feeds can be forced to update with the command
 
