@@ -3,11 +3,6 @@ pub(crate) mod env;
 mod events;
 pub(crate) mod model;
 
-#[allow(clippy::all)]
-#[allow(dead_code)]
-#[allow(unused_variables)]
-mod network;
-
 use self::model::{update_all_feeds, Feed};
 
 pub use self::commands::{after_hook, before_hook, COMMANDS_GROUP, HELP};
