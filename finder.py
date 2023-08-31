@@ -7,11 +7,12 @@ from sys import argv, exit
 # MEIC-A 2761663971475
 degree_id = 2761663971475
 
-if len(argv) < 2:
-  print(f"Usage: {argv[0]} <semester: 1|2>")
+if len(argv) < 3:
+  print(f"Usage: {argv[0]} <start_year> <semester: 1|2>")
   exit()
 
-semester = argv[1]
+start_year = int(argv[1])
+semester = argv[2]
 
 renaming = {
     "GTI": "AID",
@@ -50,9 +51,7 @@ renaming = {
     "DMEIC2": "DMEIC",
 }
 
-ignored = ["AExt-I-4", "AExt-II-4", "AExt23", "AExt22"]
-
-response = requests.get(f"https://fenix.tecnico.ulisboa.pt/api/fenix/v1/degrees/{degree_id}/courses?academicTerm=2022/2023").json()
+response = requests.get(f"https://fenix.tecnico.ulisboa.pt/api/fenix/v1/degrees/{degree_id}/courses?academicTerm={start_year}/{start_year+1}").json()
 
 courses = {}
 
@@ -60,12 +59,15 @@ def rename(acronym):
     return renaming.get(acronym, acronym)
 
 def rss_url(acronym):
-    return f"https://fenix.tecnico.ulisboa.pt/disciplinas/{acronym}/2022-2023/1-semestre/rss/announcement"
+    return f"https://fenix.tecnico.ulisboa.pt/disciplinas/{acronym}/{start_year}-{start_year+1}/1-semestre/rss/announcement"
+
+def should_ignore(course):
+  return "AExt" in course["acronym"]
 
 count = 0
 
 for course in response:
-    if course["academicTerm"][0] == semester and course["acronym"] not in ignored:
+    if course["academicTerm"][0] == semester and not should_ignore(course):
         courses[rename(course["acronym"])] = { "updated": 0, "link": rss_url(course["acronym"])  }
         count += 1
 
