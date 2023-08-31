@@ -1,6 +1,7 @@
+#!/usr/bin/env python3
 import requests
 import json
-from sys import argv
+from sys import argv, exit
 
 # MEIC-T 2761663971585
 # MEIC-A 2761663971475
@@ -8,6 +9,7 @@ degree_id = 2761663971475
 
 if len(argv) < 2:
   print(f"Usage: {argv[0]} <semester: 1|2>")
+  exit()
 
 semester = argv[1]
 
