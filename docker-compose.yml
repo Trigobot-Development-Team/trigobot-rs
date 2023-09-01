@@ -4,5 +4,4 @@ services:
     build: .
     container_name: "trigobot"
     volumes:
-      - ./${STATE_FILE}:/home/trigobot/${STATE_FILE}
-      - ./.env:/home/trigobot/.env
+      - .:/home/trigobot/
