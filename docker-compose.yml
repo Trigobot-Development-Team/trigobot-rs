@@ -4,4 +4,4 @@ services:
     build: .
     container_name: "trigobot"
     volumes:
-      - .:/home/trigobot/
+      - ./run:/home/trigobot/run
