@@ -42,7 +42,7 @@ async fn main() {
         .expect("Couldn't create client");
 
     let state = Arc::new(RwLock::new(
-        match State::load_from_file(&get_var(Variables::StateFile)) {
+        match State::load_from_file(get_var(Variables::StateFile)) {
             Ok(val) => val,
             Err(error) => {
                 tracing::error!(%error, "Couldn't load feeds from file");

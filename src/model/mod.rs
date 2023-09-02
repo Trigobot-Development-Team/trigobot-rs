@@ -28,7 +28,6 @@ pub(crate) async fn update_all_feeds<T: CacheHttp>(
     let feed_updates = state
         .get_mut_feeds()
         .values_mut()
-        .into_iter()
         .map(|feed| {
             let name = feed.get_name();
             update_feed(&ctx, feed).map_err(|e| (name, e))
@@ -40,7 +39,7 @@ pub(crate) async fn update_all_feeds<T: CacheHttp>(
         .collect::<Vec<_>>()
         .await;
 
-    if let Err(error) = State::save_to_file(&get_var(Variables::StateFile), state) {
+    if let Err(error) = State::save_to_file(get_var(Variables::StateFile), state) {
         tracing::error!(%error, "failed to save state after feed updates");
         errors.push((
             "(none)".to_owned(),
