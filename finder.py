@@ -18,6 +18,7 @@ renaming = {
     "GTI": "AID",
     "ASE": "ACPIC",
     "AP-Dei": "AP",
+    "ARC": "CRC",
     "BC2": "BC",
     "CSF2": "CSF",
     "CDadosi2": "CD",
@@ -56,10 +57,11 @@ response = requests.get(f"https://fenix.tecnico.ulisboa.pt/api/fenix/v1/degrees/
 courses = {}
 
 def rename(acronym):
+    acronym = acronym[:-1] if acronym[-1] == "3" else acronym
     return renaming.get(acronym, acronym)
 
 def rss_url(acronym):
-    return f"https://fenix.tecnico.ulisboa.pt/disciplinas/{acronym}/{start_year}-{start_year+1}/1-semestre/rss/announcement"
+    return f"https://fenix.tecnico.ulisboa.pt/disciplinas/{acronym}/{start_year}-{start_year+1}/{semester}-semestre/rss/announcement"
 
 def should_ignore(course):
   return "AExt" in course["acronym"]
