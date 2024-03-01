@@ -28,6 +28,7 @@ renaming = {
     "QS": "EspSof",
     "DIIC": "EDI",
     "AOSI": "FSI",
+    "AOSI2": "FSI",
     "LN2": "LN",
     "PIV3": "PIV",
     "RGI": "PRI",
