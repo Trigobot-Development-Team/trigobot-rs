@@ -54,6 +54,7 @@ pub(crate) async fn update_all_feeds<T: CacheHttp>(
     }
 }
 
+#[allow(clippy::blocks_in_conditions)]
 #[tracing::instrument(skip(ctx), err)]
 async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> eyre::Result<()> {
     let announcements_channel = ChannelId(

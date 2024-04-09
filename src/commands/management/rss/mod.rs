@@ -45,8 +45,8 @@ pub(crate) async fn add_feed_role(
 
     let role = roles.values().find(|r| r.name == name);
 
-    if role.is_some() {
-        return Ok(role.unwrap().to_owned());
+    if let Some(role) = role {
+        return Ok(role.to_owned());
     }
 
     guild
@@ -72,8 +72,8 @@ pub(crate) async fn add_feed_channel(
 
     let channel = channels.values().find(|c| c.name == name.to_lowercase());
 
-    if channel.is_some() {
-        return Ok(channel.unwrap().to_owned());
+    if let Some(channel) = channel {
+        return Ok(channel.to_owned());
     }
 
     // The everyone role id is equal to the guild id
