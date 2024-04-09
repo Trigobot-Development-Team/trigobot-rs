@@ -18,15 +18,8 @@ RUN rm ./target/x86_64-unknown-linux-musl/release/deps/trigobot* && cargo build 
 # Create image to run our code
 FROM alpine:latest
 
-ENV RUN_USER=trigobot
+COPY --from=builder /home/rust/src/trigobot/target/x86_64-unknown-linux-musl/release/trigobot /home/trigobot/trigobot
 
-RUN addgroup -S $RUN_USER && adduser -S -g $RUN_USER $RUN_USER
-COPY --from=builder --chown=$RUN_USER:$RUN_USER /home/rust/src/trigobot/target/x86_64-unknown-linux-musl/release/trigobot /home/trigobot/trigobot
+WORKDIR /home/trigobot/run
 
-RUN chown $RUN_USER:$RUN_USER /home/trigobot/trigobot
-#COPY --chown=$RUN_USER:$RUN_USER /home/trigobot/.env /.env
-
-USER $RUN_USER
-WORKDIR /home/trigobot
-
-CMD ["./trigobot"]
+CMD ["../trigobot"]
