@@ -39,9 +39,9 @@
         "x86_64-darwin"
       ];
       # perSystem = { config, self', inputs', pkgs, system, ... }: {
-      perSystem = { config, pkgs, system, ... }:
+      perSystem = { config, pkgs, ... }:
         let
-          craneLib = inputs.crane.lib.${system};
+          craneLib = inputs.crane.mkLib pkgs;
         in
         rec {
           # Per-system attributes can be defined here. The self' and inputs'
