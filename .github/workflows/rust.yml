@@ -14,19 +14,15 @@ jobs:
     name: Trigobot Carcinized
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-
-      - uses: Swatinem/rust-cache@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
 
       - name: Build
         run: cargo build --verbose
 
       - name: Clippy Check
-        run: cargo clippy -- -Dclippy::all --verbose
+        run: cargo clippy -- -Dclippy::all
 
       - name: Format Check
         run: cargo fmt --all -- --check
