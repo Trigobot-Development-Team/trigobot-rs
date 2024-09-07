@@ -229,7 +229,7 @@ fn prune_msg(msg: &str, len: usize) -> String {
         .collect::<Vec<char>>()
         .chunks(len)
         .next()
-        .unwrap()
+        .unwrap_or_default()
         .iter()
         .collect()
 }
