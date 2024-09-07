@@ -2,7 +2,7 @@
 FROM alpine:latest AS builder
 
 # Install rust
-RUN apk add rustup musl-dev rustup
+RUN apk add rustup musl-dev gcc
 RUN rustup-init -y
 
 # docker build won't source ~/.profile for some reason
