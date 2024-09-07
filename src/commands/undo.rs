@@ -19,7 +19,7 @@ async fn undo(ctx: &Context, msg: &Message) -> CommandResult {
         };
     }
 
-    let bot_id = ctx.cache.current_user_id().await;
+    let bot_id = ctx.cache.current_user_id();
 
     if let Some(message) = channel
         .messages(ctx, |b| b)

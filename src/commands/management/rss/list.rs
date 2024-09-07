@@ -1,6 +1,6 @@
 use crate::State;
 
-use chrono::{DateTime, NaiveDateTime, Utc};
+use chrono::DateTime;
 
 use serenity::client::Context;
 use serenity::framework::standard::macros::command;
@@ -29,11 +29,9 @@ async fn list(ctx: &Context, msg: &Message) -> CommandResult {
                 .push_line(f.get_link())
                 .push("Última atualização: ")
                 .push_line(
-                    DateTime::<Utc>::from_utc(
-                        NaiveDateTime::from_timestamp(f.get_update() as i64, 0),
-                        Utc,
-                    )
-                    .format("%Y/%m/%d %T %Z"),
+                    DateTime::from_timestamp(f.get_update() as i64, 0)
+                        .ok_or("invalid last update")?
+                        .format("%Y/%m/%d %T %Z"),
                 )
                 .build();
 

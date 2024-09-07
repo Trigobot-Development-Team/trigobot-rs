@@ -66,9 +66,8 @@ async fn update_feed<T: CacheHttp>(ctx: &T, feed: &mut Feed) -> eyre::Result<()>
     let role = feed.get_role();
 
     let color = role
-        .to_role_cached(&ctx.cache().ok_or(eyre!("no cache provided")).trace_err()?)
-        .await
-        .ok_or(eyre!("failed to fetch role"))
+        .to_role_cached(ctx.cache().ok_or(eyre!("no cache provided")).trace_err()?)
+        .ok_or(eyre!("failed to get role"))
         .trace_err()?
         .colour;
 

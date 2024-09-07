@@ -79,18 +79,18 @@ pub(crate) async fn add_feed_channel(
     // The everyone role id is equal to the guild id
     let everyone_permissions = PermissionOverwrite {
         allow: Permissions::empty(),
-        deny: Permissions::READ_MESSAGES,
+        deny: Permissions::READ_MESSAGE_HISTORY,
         kind: PermissionOverwriteType::Role(RoleId(guild.0)),
     };
 
     let role_permissions = PermissionOverwrite {
-        allow: Permissions::READ_MESSAGES,
+        allow: Permissions::READ_MESSAGE_HISTORY,
         deny: Permissions::empty(),
         kind: PermissionOverwriteType::Role(role),
     };
 
     let delegate_permissions = PermissionOverwrite {
-        allow: Permissions::READ_MESSAGES,
+        allow: Permissions::READ_MESSAGE_HISTORY,
         deny: Permissions::empty(),
         kind: PermissionOverwriteType::Role(RoleId(
             get_var(Variables::DelegateRole)

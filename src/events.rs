@@ -5,7 +5,7 @@ use serenity::async_trait;
 use serenity::http::HttpError;
 use serenity::model::channel::Reaction;
 use serenity::model::guild::Member;
-use serenity::model::id::{ChannelId, GuildId};
+use serenity::model::id::ChannelId;
 use serenity::prelude::*;
 use serenity::utils::MessageBuilder;
 
@@ -21,7 +21,7 @@ const EN_WELCOME_MSG: &str = "**[EN]**\n\nWelcome to the MEIC server\n\nWe have 
 #[async_trait]
 impl EventHandler for Handler {
     /// Handler for new members
-    async fn guild_member_addition(&self, ctx: Context, _guild: GuildId, member: Member) {
+    async fn guild_member_addition(&self, ctx: Context, member: Member) {
         match member.user.dm(&ctx, |m| m.content(PT_WELCOME_MSG)).await {
             Ok(_) => {
                 // Assume if one message is sent, the other one is too
