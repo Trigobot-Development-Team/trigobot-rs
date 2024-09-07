@@ -10,8 +10,6 @@ RUN cargo build --release && rm -r src/*.rs
 
 # Build our code
 ADD --chown=rust:rust ./src ./src
-ADD --chown=rust:rust ./proto ./proto
-COPY --chown=rust:rust ./build.rs ./build.rs
 RUN rm ./target/x86_64-unknown-linux-musl/release/deps/trigobot* && cargo build --release
 
 
