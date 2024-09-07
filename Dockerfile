@@ -21,13 +21,13 @@ RUN cargo build --release && rm -r src/*.rs
 
 # Build our code
 ADD ./src ./src
-RUN rm ./target/x86_64-unknown-linux-musl/release/deps/trigobot* && cargo build --release
+RUN rm ./target/release/deps/trigobot* && cargo build --release
 
 
 # Create image to run our code
 FROM alpine:latest
 
-COPY --from=builder /home/rust/src/trigobot/target/x86_64-unknown-linux-musl/release/trigobot /home/trigobot/trigobot
+COPY --from=builder /trigobot/target/release/trigobot /home/trigobot/trigobot
 
 WORKDIR /home/trigobot/run
 
