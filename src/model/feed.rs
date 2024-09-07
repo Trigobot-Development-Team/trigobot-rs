@@ -86,11 +86,11 @@ impl Feed {
     }
 
     pub(crate) fn get_role(&self) -> RoleId {
-        RoleId(self.role)
+        RoleId::new(self.role)
     }
 
     pub(crate) fn get_channel(&self) -> ChannelId {
-        ChannelId(self.channel)
+        ChannelId::new(self.channel)
     }
 
     pub(crate) fn get_message(&self) -> MessageId {
