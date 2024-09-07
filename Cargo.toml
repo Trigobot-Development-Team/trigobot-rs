@@ -17,11 +17,11 @@ notify = "4"
 prost = "0.11"
 rand = "0.8"
 regex = "1"
-reqwest = { version = "0.11", default_features = false, features = ["rustls"] }
+reqwest = { version = "0.11", default-features = false, features = ["rustls"] }
 rss = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-serenity = { version = "0.10", default_features = false, features = ["cache", "client", "gateway", "model", "rustls_backend", "standard_framework"] }
+serenity = { version = "0.10", default-features = false, features = ["cache", "client", "gateway", "model", "rustls_backend", "standard_framework"] }
 tempfile = "3"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tonic = "0.8"
