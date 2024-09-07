@@ -33,7 +33,7 @@ async fn category(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
 
         state.set_category(category.0);
 
-        match State::save_to_file(&get_var(Variables::StateFile), &state) {
+        match State::save_to_file(get_var(Variables::StateFile), &state) {
             Ok(_) => (),
             Err(e) => {
                 eprintln!("Error saving state: {}", e);

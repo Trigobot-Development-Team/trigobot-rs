@@ -68,7 +68,7 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
                     state.get_mut_messages().remove(&old.get_message().0);
                 }
 
-                match State::save_to_file(&get_var(Variables::StateFile), &state) {
+                match State::save_to_file(get_var(Variables::StateFile), &state) {
                     Ok(_) => (),
                     Err(e) => {
                         eprintln!("Error saving state: {}", e);

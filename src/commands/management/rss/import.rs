@@ -116,7 +116,7 @@ async fn import(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
             messages.extend(messages_to_add);
         }
 
-        match State::save_to_file(&get_var(Variables::StateFile), &state) {
+        match State::save_to_file(get_var(Variables::StateFile), &state) {
             Ok(_) => (),
             Err(e) => {
                 eprintln!("Error saving state: {}", e);

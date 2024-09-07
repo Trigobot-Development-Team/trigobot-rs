@@ -32,7 +32,7 @@ async fn main() {
         .event_handler(Handler)
         .framework(
             StandardFramework::new()
-                .configure(|c| c.prefix(&get_var(Variables::CommandPrefix)))
+                .configure(|c| c.prefix(get_var(Variables::CommandPrefix)))
                 .before(before_hook)
                 .after(after_hook)
                 .group(&COMMANDS_GROUP)

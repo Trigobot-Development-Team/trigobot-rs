@@ -55,7 +55,7 @@ async fn mv(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             messages.remove(&old_msg.0);
             messages.insert(new_msg.0, role.0);
 
-            match State::save_to_file(&get_var(Variables::StateFile), &state) {
+            match State::save_to_file(get_var(Variables::StateFile), &state) {
                 Ok(_) => (),
                 Err(e) => {
                     eprintln!("Error saving state: {}", e);

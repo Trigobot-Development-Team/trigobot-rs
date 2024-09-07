@@ -33,7 +33,7 @@ async fn rm(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             // Remove from reaction messages
             state.get_mut_messages().remove(&feed.get_message().0);
 
-            match State::save_to_file(&get_var(Variables::StateFile), &state) {
+            match State::save_to_file(get_var(Variables::StateFile), &state) {
                 Ok(_) => (),
                 Err(e) => {
                     eprintln!("Error saving state: {}", e);

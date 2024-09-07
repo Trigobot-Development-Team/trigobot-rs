@@ -55,7 +55,7 @@ impl Feed {
                     .expect("Number of cache entries is invalid!"),
             ),
             channel,
-            updated: if let Some(val) = updated { val } else { 0 },
+            updated: updated.unwrap_or_default(),
             message,
         }
     }
