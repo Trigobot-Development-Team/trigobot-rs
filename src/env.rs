@@ -102,7 +102,7 @@ fn clean_env() {
 
 pub fn load_env() {
     // Load .env file vars
-    dotenv().unwrap();
+    dotenv().expect("failed to load variables from .env");
 
     // Try all enum variations
     let mut new_vals = HashMap::new();
