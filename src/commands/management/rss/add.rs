@@ -36,7 +36,7 @@ async fn add(ctx: &Context, msg: &Message, mut args: Args) -> CommandResult {
             // Create channel and role (if they don't exist)
             let role = add_feed_role(ctx, &guild, &name).await?;
             let channel =
-                add_feed_channel(ctx, &guild, &name, role.id, ChannelId(category)).await?;
+                add_feed_channel(ctx, &guild, &name, role.id, ChannelId::new(category)).await?;
 
             // Create reaction-role message
             let message = add_feed_message(ctx, &name, role.id, channel.id).await?;

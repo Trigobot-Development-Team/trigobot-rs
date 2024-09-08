@@ -13,7 +13,7 @@ use serenity::model::id::ChannelId;
 #[example("1234567890")]
 #[num_args(1)]
 async fn category(ctx: &Context, msg: &Message, args: Args) -> CommandResult {
-    let category = ChannelId(match args.parse::<u64>() {
+    let category = ChannelId::new(match args.parse::<u64>() {
         Ok(val) => val,
         Err(_) => {
             msg.reply(ctx, "Couldn't parse category id").await?;

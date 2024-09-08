@@ -32,7 +32,7 @@ impl EventHandler for Handler {
                 SerenityError::Http(e) => match *e {
                     HttpError::UnsuccessfulRequest(e) => {
                         if e.error.message == "Cannot send messages to this user" {
-                            match ChannelId(
+                            match ChannelId::new(
                                 get_var(Variables::WelcomeChannel)
                                     .parse::<u64>()
                                     .expect("Welcome channel id is invalid!"),
@@ -43,7 +43,7 @@ impl EventHandler for Handler {
                                     .push("Hey ")
                                     .mention(&member)
                                     .push("!\nCheck channel ")
-                                    .channel(ChannelId(
+                                    .channel(ChannelId::new(
                                         get_var(Variables::RulesChannel)
                                             .parse::<u64>()
                                             .expect("Rules channel id is invalid!"),

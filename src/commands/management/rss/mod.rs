@@ -80,7 +80,7 @@ pub(crate) async fn add_feed_channel(
     let everyone_permissions = PermissionOverwrite {
         allow: Permissions::empty(),
         deny: Permissions::READ_MESSAGE_HISTORY,
-        kind: PermissionOverwriteType::Role(RoleId(guild.0)),
+        kind: PermissionOverwriteType::Role(RoleId::new(guild.0)),
     };
 
     let role_permissions = PermissionOverwrite {
@@ -92,7 +92,7 @@ pub(crate) async fn add_feed_channel(
     let delegate_permissions = PermissionOverwrite {
         allow: Permissions::READ_MESSAGE_HISTORY,
         deny: Permissions::empty(),
-        kind: PermissionOverwriteType::Role(RoleId(
+        kind: PermissionOverwriteType::Role(RoleId::new(
             get_var(Variables::DelegateRole)
                 .parse::<u64>()
                 .expect("Delegate role id is not valid!"),
@@ -122,7 +122,7 @@ pub(crate) async fn add_feed_message(
 ) -> Result<MessageId, Error> {
     let reaction = get_var(Variables::ReactionRole);
 
-    Ok(ChannelId(
+    Ok(ChannelId::new(
         get_var(Variables::ReactionRolesChannel)
             .parse::<u64>()
             .expect("React roles' channel id is not valid!"),
@@ -177,7 +177,7 @@ pub(crate) async fn add_feed_message(
 
 /// Remove feed reaction role message
 pub(crate) async fn rm_feed_message(ctx: &Context, msg: MessageId) -> Result<(), Error> {
-    ChannelId(
+    ChannelId::new(
         get_var(Variables::ReactionRolesChannel)
             .parse::<u64>()
             .expect("React roles' channel id is not valid"),
